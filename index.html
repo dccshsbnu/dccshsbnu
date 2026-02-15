@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DCC化学 · 登录注册</title>
-    <!-- 使用国内镜像加载 Supabase -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         
         body { 
             background: linear-gradient(145deg, #f0f9ff 0%, #e6f0f5 100%); 
@@ -15,27 +14,45 @@
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            padding: 20px;
+            padding: 16px;
         }
         
         .card { 
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 40px; 
-            box-shadow: 0 30px 60px -15px rgba(27, 58, 85, 0.3), 0 0 0 1px rgba(43, 110, 155, 0.1) inset; 
+            box-shadow: 0 30px 60px -15px rgba(27, 58, 85, 0.3); 
             width: 100%; 
             max-width: 480px; 
             padding: 48px 36px; 
             text-align: center; 
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
         }
         
-        .card:hover {
-            transform: translateY(-5px);
+        /* 手机版 */
+        @media (max-width: 480px) {
+            .card {
+                padding: 32px 20px;
+                border-radius: 32px;
+            }
+            
+            h1 { font-size: 2.2rem; }
+            
+            .input-field { padding: 14px 18px; }
+            
+            .btn { padding: 14px; }
+        }
+        
+        /* 平板版 */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .card {
+                max-width: 600px;
+                padding: 40px 32px;
+            }
         }
         
         h1 { 
-            font-size: 3rem; 
+            font-size: 2.8rem; 
             font-weight: 700;
             background: linear-gradient(135deg, #1e3c5a, #2b6e9b);
             -webkit-background-clip: text;
@@ -46,9 +63,8 @@
         
         .sub { 
             color: #527a9b; 
-            margin-bottom: 40px; 
+            margin-bottom: 32px; 
             font-size: 1.1rem;
-            font-weight: 500;
             border-bottom: 2px solid #e9f0f5;
             padding-bottom: 20px;
         }
@@ -95,7 +111,7 @@
             outline: none; 
             background: white;
             transition: all 0.2s ease;
-            padding-right: 60px;
+            padding-right: 70px;
         }
         
         .input-field:focus { 
@@ -103,36 +119,20 @@
             box-shadow: 0 0 0 4px rgba(43,110,155,0.15);
         }
         
-        .input-field::placeholder {
-            color: #94a3b8;
-            font-weight: 400;
-        }
-        
-        .input-field:disabled {
-            background: #f1f5f9;
-            color: #475569;
-            border-color: #e2e8f0;
-        }
-        
         .password-toggle {
             position: absolute;
-            right: 20px;
+            right: 16px;
             top: 50%;
             transform: translateY(-50%);
-            background: none;
+            background: rgba(43, 110, 155, 0.1);
             border: none;
             color: #2b6e9b;
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            padding: 8px 12px;
+            padding: 8px 16px;
             border-radius: 30px;
-            transition: all 0.2s ease;
-            background: rgba(43, 110, 155, 0.1);
-        }
-        
-        .password-toggle:hover {
-            background: rgba(43, 110, 155, 0.2);
+            min-width: 60px;
         }
         
         .btn { 
@@ -153,7 +153,6 @@
         .btn:hover { 
             background: #1d4f73; 
             transform: translateY(-2px);
-            box-shadow: 0 15px 25px -8px rgba(43,110,155,0.5);
         }
         
         .btn-outline { 
@@ -166,23 +165,22 @@
         .btn-outline:hover { 
             background: #e6f0f7; 
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px -8px rgba(43,110,155,0.2);
         }
         
         .hidden { display: none; }
         
-        .message { 
+        .message, .admin-message { 
             color: #b91c1c; 
             margin: 16px 0; 
             min-height: 24px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 500;
         }
         
         .success { 
             color: #2b6e9b; 
             min-height: 24px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 500;
         }
         
@@ -191,24 +189,22 @@
             padding: 20px;
             background: #f8fafc;
             border-radius: 30px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #475569;
             border: 1px solid #e2e8f0;
-            text-align: center;
-            line-height: 1.6;
         }
         
         .admin-note strong {
             color: #2b6e9b;
-            font-size: 1.1rem;
+            font-size: 1rem;
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         
         .footer-note {
             margin-top: 24px;
             color: #94a3b8;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -218,68 +214,55 @@
         <div class="sub">化学社团 · 知识讲解</div>
         
         <div class="tab-buttons">
-            <button class="tab-btn active" id="btnStudent">学员</button>
-            <button class="tab-btn" id="btnAdmin">管理员</button>
+            <button class="tab-btn active" id="btnStudent">👨‍🔬 学员</button>
+            <button class="tab-btn" id="btnAdmin">👑 管理员</button>
         </div>
 
-        <!-- 学员区域 -->
         <div id="studentSection">
             <div class="input-container">
-                <input type="text" class="input-field" id="studentName" placeholder="请输入姓名">
+                <input type="text" class="input-field" id="studentName" placeholder="姓名">
             </div>
             <div class="input-container">
-                <input type="password" class="input-field" id="studentPass" placeholder="请输入密码">
+                <input type="password" class="input-field" id="studentPass" placeholder="密码">
                 <button class="password-toggle" onclick="togglePassword('studentPass')">显示</button>
             </div>
             <button class="btn" id="studentLoginBtn">🔐 登录</button>
-            <button class="btn btn-outline" id="studentRegisterBtn">📝 注册新账号</button>
+            <button class="btn btn-outline" id="studentRegisterBtn">📝 注册</button>
         </div>
 
-        <!-- 管理员区域 -->
         <div id="adminSection" class="hidden">
             <div class="input-container">
-                <input type="text" class="input-field" value="admin" disabled>
+                <input type="text" class="input-field" value="admin" disabled style="background: #f1f5f9;">
             </div>
             <div class="input-container">
-                <input type="password" class="input-field" id="adminPass" placeholder="请输入管理员密码">
+                <input type="password" class="input-field" id="adminPass" placeholder="管理员密码">
                 <button class="password-toggle" onclick="togglePassword('adminPass')">显示</button>
             </div>
-            <button class="btn" id="adminLoginBtn">管理员登录</button>
+            <button class="btn" id="adminLoginBtn">👑 管理员登录</button>
             <div id="adminMessage" class="message"></div>
             <div class="admin-note">
-                <strong>👥 同学登录</strong>
-                请在左侧「学员」选项卡中登录<br>
-                使用您的学员账号和密码
+                <strong>👥 学员通道</strong>
+                请在左侧「学员」选项卡登录
             </div>
         </div>
 
         <div id="globalMessage" class="message"></div>
         <div id="successMessage" class="success"></div>
-        <div class="footer-note">加入 DCC，探索化学的奥秘</div>
+        <div class="footer-note">DCC 化学社团</div>
     </div>
 
     <script>
-        // 密码显示/隐藏切换函数
         function togglePassword(inputId) {
             const input = document.getElementById(inputId);
             const button = event.target;
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                button.textContent = '隐藏';
-            } else {
-                input.type = 'password';
-                button.textContent = '显示';
-            }
+            input.type = input.type === 'password' ? 'text' : 'password';
+            button.textContent = input.type === 'password' ? '显示' : '隐藏';
         }
 
-        // Supabase 配置
         const SUPABASE_URL = 'https://fdwacsuphbpxfariohan.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkd2Fjc3VwaGJweGZhcmlvaGFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMDM1MzcsImV4cCI6MjA4NjY3OTUzN30.q1CzBhIw8xVYL4efkTvGYLkeC04dnBSCPcAWk7LHxxU';
-        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // DOM 元素
         const btnStudent = document.getElementById('btnStudent');
         const btnAdmin = document.getElementById('btnAdmin');
         const studentSection = document.getElementById('studentSection');
@@ -294,7 +277,6 @@
             if (adminMsg) adminMsg.innerText = '';
         }
 
-        // 选项卡切换
         btnStudent.onclick = function() {
             btnStudent.classList.add('active');
             btnAdmin.classList.remove('active');
@@ -311,16 +293,11 @@
             clearMessages();
         };
 
-        // 学员登录
         document.getElementById('studentLoginBtn').onclick = async function() {
             const name = document.getElementById('studentName').value.trim();
             const pass = document.getElementById('studentPass').value.trim();
             clearMessages();
-
-            if (!name || !pass) {
-                globalMsg.innerText = '请填写姓名和密码';
-                return;
-            }
+            if (!name || !pass) { globalMsg.innerText = '请填写姓名和密码'; return; }
 
             try {
                 const { data, error } = await supabaseClient
@@ -331,35 +308,25 @@
                     .eq('role', 'student');
 
                 if (error) throw error;
-
                 if (data && data.length > 0) {
                     sessionStorage.setItem('userId', data[0].id);
                     sessionStorage.setItem('userName', data[0].name);
                     sessionStorage.setItem('userRole', data[0].role);
-                    
-                    successMsg.innerText = '✅ 登录成功，正在跳转...';
-                    setTimeout(() => {
-                        window.location.href = 'student.html';
-                    }, 1000);
+                    successMsg.innerText = '✅ 登录成功';
+                    setTimeout(() => window.location.href = 'student.html', 800);
                 } else {
                     globalMsg.innerText = '用户名或密码错误';
                 }
             } catch (error) {
-                globalMsg.innerText = '登录失败：' + error.message;
-                console.error(error);
+                globalMsg.innerText = '登录失败';
             }
         };
 
-        // 学员注册
         document.getElementById('studentRegisterBtn').onclick = async function() {
             const name = document.getElementById('studentName').value.trim();
             const pass = document.getElementById('studentPass').value.trim();
             clearMessages();
-
-            if (!name || !pass) {
-                globalMsg.innerText = '请填写姓名和密码';
-                return;
-            }
+            if (!name || !pass) { globalMsg.innerText = '请填写完整'; return; }
 
             try {
                 const { data: existing } = await supabaseClient
@@ -368,7 +335,7 @@
                     .eq('name', name);
 
                 if (existing && existing.length > 0) {
-                    globalMsg.innerText = '用户名已存在，请直接登录';
+                    globalMsg.innerText = '用户名已存在';
                     return;
                 }
 
@@ -377,22 +344,16 @@
                     .insert([{ name, password: pass, role: 'student' }]);
 
                 if (error) throw error;
-
-                successMsg.innerText = '✅ 注册成功！请登录';
+                successMsg.innerText = '✅ 注册成功';
                 document.getElementById('studentPass').value = '';
-                
             } catch (error) {
-                globalMsg.innerText = '注册失败：' + error.message;
-                console.error(error);
+                globalMsg.innerText = '注册失败';
             }
         };
 
-        // 管理员登录
         document.getElementById('adminLoginBtn').onclick = async function() {
             const pass = document.getElementById('adminPass').value.trim();
             if (adminMsg) adminMsg.innerText = '';
-
-            // 管理员密码仍然是 DailyChemClub，但不显示在界面上
             if (pass !== 'DailyChemClub') {
                 if (adminMsg) adminMsg.innerText = '❌ 密码错误';
                 return;
@@ -406,22 +367,17 @@
                     .eq('role', 'admin');
 
                 if (error) throw error;
-
                 if (data && data.length > 0) {
                     sessionStorage.setItem('userId', data[0].id);
                     sessionStorage.setItem('userName', data[0].name);
                     sessionStorage.setItem('userRole', data[0].role);
-                    
-                    if (adminMsg) adminMsg.innerText = '✅ 登录成功，正在跳转...';
-                    setTimeout(() => {
-                        window.location.href = 'admin.html';
-                    }, 1000);
+                    if (adminMsg) adminMsg.innerText = '✅ 登录成功';
+                    setTimeout(() => window.location.href = 'admin.html', 800);
                 } else {
                     if (adminMsg) adminMsg.innerText = '❌ 管理员账号不存在';
                 }
             } catch (error) {
-                if (adminMsg) adminMsg.innerText = '❌ 登录失败：' + error.message;
-                console.error(error);
+                if (adminMsg) adminMsg.innerText = '❌ 登录失败';
             }
         };
     </script>
