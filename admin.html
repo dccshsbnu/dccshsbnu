@@ -191,6 +191,24 @@
             min-width: 200px;
         }
         
+        .time-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .time-input-group input {
+            flex: 1;
+            min-width: 100px;
+        }
+        
+        .time-separator {
+            color: #64748b;
+            font-weight: 600;
+        }
+        
         .hidden {
             display: none;
         }
@@ -266,23 +284,33 @@
                 <thead>
                     <tr>
                         <th>日期</th>
+                        <th>时间</th>
                         <th>讲师</th>
                         <th>课程名称</th>
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody id="coursesTable">
-                    <tr><td colspan="4" style="text-align:center; padding:40px;">加载中...</td></tr>
+                    <tr><td colspan="5" style="text-align:center; padding:40px;">加载中...</td></tr>
                 </tbody>
             </table>
             
             <h4>➕ 新增课程</h4>
             <div class="btn-group">
-                <input type="date" id="newCourseDate">
-                <select id="newCourseInstructor">
+                <input type="date" id="newCourseDate" style="flex:1;">
+                
+                <!-- 时间段选择 -->
+                <div class="time-input-group">
+                    <input type="time" id="newStartTime" value="15:30" style="flex:1;">
+                    <span class="time-separator">至</span>
+                    <input type="time" id="newEndTime" value="17:00" style="flex:1;">
+                </div>
+                
+                <select id="newCourseInstructor" style="flex:1;">
                     <option value="">选择讲师</option>
                 </select>
-                <input type="text" id="newCourseName" placeholder="课程名称">
+                
+                <input type="text" id="newCourseName" placeholder="课程名称" style="flex:1;">
                 <button class="btn" id="addCourseBtn">添加课程</button>
             </div>
             <div id="courseMessage" class="message"></div>
@@ -340,12 +368,14 @@
                         <th>学员</th>
                         <th>课程</th>
                         <th>日期</th>
+                        <th>时间</th>
                         <th>讲师</th>
                         <th>报名时间</th>
+                        <th>操作</th>
                     </tr>
                 </thead>
                 <tbody id="registrationsTable">
-                    <tr><td colspan="5" style="text-align:center; padding:40px;">加载中...</td></tr>
+                    <tr><td colspan="7" style="text-align:center; padding:40px;">加载中...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -524,18 +554,22 @@
                 .order('date');
             
             if (error) {
-                document.getElementById('coursesTable').innerHTML = `<tr><td colspan="4" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
+                document.getElementById('coursesTable').innerHTML = `<tr><td colspan="5" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
                 return;
             }
             
             const tbody = document.getElementById('coursesTable');
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:40px;">暂无课程</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">暂无课程</td></tr>';
             } else {
                 let html = '';
                 data.forEach(c => {
+                    // 解析时间段，如果没有则显示默认
+                    const timeRange = c.time_range || '15:30-17:00';
+                    
                     html += `<tr>
                         <td>${c.date}</td>
+                        <td>${timeRange}</td>
                         <td>${c.instructors?.name || '未知'}</td>
                         <td>${c.course_name}</td>
                         <td><button class="btn-danger btn" onclick="deleteCourse('${c.id}')">删除</button></td>
@@ -561,22 +595,34 @@
 
         document.getElementById('addCourseBtn').onclick = async function() {
             const date = document.getElementById('newCourseDate').value;
+            const startTime = document.getElementById('newStartTime').value;
+            const endTime = document.getElementById('newEndTime').value;
             const instructor_id = document.getElementById('newCourseInstructor').value;
             const course_name = document.getElementById('newCourseName').value.trim();
             
-            if (!date || !instructor_id || !course_name) {
-                document.getElementById('courseMessage').innerText = '请填写完整';
+            if (!date || !startTime || !endTime || !instructor_id || !course_name) {
+                document.getElementById('courseMessage').innerText = '请填写完整信息';
                 return;
             }
             
+            // 组合时间段
+            const time_range = `${startTime}-${endTime}`;
+            
             const { error } = await supabaseClient
                 .from('courses')
-                .insert([{ date, instructor_id, course_name }]);
+                .insert([{ 
+                    date, 
+                    time_range,
+                    instructor_id, 
+                    course_name 
+                }]);
             
             if (error) {
                 document.getElementById('courseMessage').innerText = '添加失败：' + error.message;
             } else {
                 document.getElementById('newCourseDate').value = '';
+                document.getElementById('newStartTime').value = '15:30';
+                document.getElementById('newEndTime').value = '17:00';
                 document.getElementById('newCourseName').value = '';
                 document.getElementById('courseMessage').innerText = '✅ 添加成功';
                 loadCourses();
@@ -590,27 +636,46 @@
                 .order('registered_at', { ascending: false });
             
             if (error) {
-                document.getElementById('registrationsTable').innerHTML = `<tr><td colspan="5" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
+                document.getElementById('registrationsTable').innerHTML = `<tr><td colspan="7" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
                 return;
             }
             
             const tbody = document.getElementById('registrationsTable');
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">暂无报名记录</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px;">暂无报名记录</td></tr>';
             } else {
                 let html = '';
                 data.forEach(r => {
+                    const timeRange = r.courses?.time_range || '15:30-17:00';
+                    
                     html += `<tr>
                         <td>${r.users?.name || r.student_name}</td>
                         <td>${r.courses?.course_name || '--'}</td>
                         <td>${r.courses?.date || '--'}</td>
+                        <td>${timeRange}</td>
                         <td>${r.courses?.instructors?.name || '--'}</td>
                         <td>${new Date(r.registered_at).toLocaleString()}</td>
+                        <td><button class="btn-danger btn" onclick="deleteRegistration('${r.id}')">删除</button></td>
                     </tr>`;
                 });
                 tbody.innerHTML = html;
             }
         }
+
+        // 删除报名记录 - 无确认框
+        window.deleteRegistration = async function(id) {
+            const { error } = await supabaseClient
+                .from('registrations')
+                .delete()
+                .eq('id', id);
+            
+            if (error) {
+                document.getElementById('registrationsTable').innerHTML = `<tr><td colspan="7" style="color:red; padding:40px;">删除失败：${error.message}</td></tr>`;
+            } else {
+                // 重新加载报名列表
+                loadRegistrations();
+            }
+        };
 
         document.getElementById('logoutBtn').onclick = function() {
             sessionStorage.clear();
