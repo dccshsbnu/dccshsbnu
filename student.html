@@ -199,11 +199,21 @@
             font-weight: 600;
             color: #2b6e9b;
             border: 1px solid #c1d9ec;
-            margin-top: 8px;
+            margin-top: 4px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        
+        .time-tag {
+            background: #e6f0f7;
+            border-radius: 16px;
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            color: #1d4f73;
+            margin-top: 4px;
+            text-align: center;
         }
         
         .registered-badge {
@@ -212,7 +222,7 @@
             border-radius: 20px;
             padding: 4px 8px;
             font-size: 0.7rem;
-            margin-top: 8px;
+            margin-top: 4px;
             text-align: center;
         }
         
@@ -373,6 +383,7 @@
                 <thead>
                     <tr>
                         <th>日期</th>
+                        <th>时间</th>
                         <th>课程名称</th>
                         <th>讲师</th>
                         <th>报名时间</th>
@@ -380,7 +391,7 @@
                     </tr>
                 </thead>
                 <tbody id="myRegistrations">
-                    <tr><td colspan="5" style="text-align:center; padding:40px;">加载中...</td></tr>
+                    <tr><td colspan="6" style="text-align:center; padding:40px;">加载中...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -450,12 +461,15 @@
             
             const tbody = document.getElementById('myRegistrations');
             if (myRegistrations.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">暂无报名记录</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">暂无报名记录</td></tr>';
             } else {
                 let html = '';
                 myRegistrations.forEach(reg => {
+                    const timeRange = reg.courses?.time_range || '15:30-17:00';
+                    
                     html += `<tr>
                         <td>${reg.courses?.date || '--'}</td>
+                        <td>${timeRange}</td>
                         <td>${reg.courses?.course_name || '--'}</td>
                         <td>${reg.courses?.instructors?.name || '--'}</td>
                         <td>${new Date(reg.registered_at).toLocaleString()}</td>
@@ -537,13 +551,16 @@
                 
                 if (course) {
                     const isRegistered = isCourseRegistered(course.id);
+                    const timeRange = course.time_range || '15:30-17:00';
                     
                     if (isRegistered) {
                         dayDiv.classList.add('registered');
                         dayDiv.innerHTML += `<div class="registered-badge">✓ 已报名</div>`;
+                        dayDiv.innerHTML += `<div class="time-tag">${timeRange}</div>`;
                     } else {
                         dayDiv.classList.add('available');
                         dayDiv.innerHTML += `<div class="course-tag">${course.course_name}</div>`;
+                        dayDiv.innerHTML += `<div class="time-tag">${timeRange}</div>`;
                         dayDiv.onclick = () => selectCourse(course);
                     }
                 }
@@ -564,11 +581,13 @@
         function selectCourse(course) {
             selectedCourse = course;
             const isRegistered = isCourseRegistered(course.id);
+            const timeRange = course.time_range || '15:30-17:00';
             
             document.getElementById('selectedCourseTitle').innerText = course.course_name;
             document.getElementById('selectedCourseDetail').innerHTML = `
                 讲师：${course.instructors?.name || '未知'}<br>
-                日期：${course.date} 15:30-17:00
+                日期：${course.date}<br>
+                时间：${timeRange}
             `;
             
             // 显示或隐藏重复报名提示
