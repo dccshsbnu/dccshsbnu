@@ -4,89 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DCC · 管理后台</title>
+    <!-- 使用和之前相同的 CDN -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         
         body { 
-            background: #f1f5f9;
+            background: linear-gradient(145deg, #f1f5f9 0%, #e6edf5 100%);
             min-height: 100vh;
         }
         
-        /* 导航栏 - 响应式 */
         .navbar {
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
             padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(43,110,155,0.1);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border-bottom: 1px solid rgba(43, 110, 155, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
             position: sticky;
             top: 0;
             z-index: 100;
-        }
-        
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 16px 24px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .navbar {
-                padding: 12px 16px;
-            }
-            .navbar h2 {
-                font-size: 1.1rem;
-            }
         }
         
         .navbar h2 {
             color: #1e405e;
             font-size: 1.5rem;
             font-weight: 600;
+            letter-spacing: -0.02em;
         }
         
-        /* 容器 */
         .container {
             max-width: 1280px;
             margin: 0 auto;
             padding: 32px 24px;
         }
         
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px 16px;
-            }
-        }
-        
-        /* 选项卡 - 响应式 */
         .tabs {
             display: flex;
-            gap: 12px;
+            gap: 16px;
             margin-bottom: 30px;
             background: white;
             padding: 8px;
             border-radius: 60px;
-            box-shadow: 0 10px 25px -8px rgba(0,0,0,0.1);
-            border: 1px solid rgba(43,110,155,0.1);
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        @media (max-width: 768px) {
-            .tabs {
-                gap: 8px;
-                padding: 6px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .tabs {
-                border-radius: 40px;
-            }
+            box-shadow: 0 10px 25px -8px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(43, 110, 155, 0.1);
         }
         
         .tab-btn {
@@ -100,50 +63,26 @@
             color: #64748b;
             transition: all 0.3s ease;
             font-size: 1rem;
-            flex-shrink: 0;
-        }
-        
-        @media (max-width: 768px) {
-            .tab-btn {
-                padding: 12px 20px;
-                font-size: 0.9rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .tab-btn {
-                padding: 10px 16px;
-                font-size: 0.85rem;
-            }
         }
         
         .tab-btn.active {
             background: #2b6e9b;
             color: white;
-            box-shadow: 0 8px 20px -8px rgba(43,110,155,0.5);
+            box-shadow: 0 8px 20px -8px rgba(43, 110, 155, 0.5);
         }
         
-        /* 面板 */
         .panel {
             background: white;
             border-radius: 32px;
             padding: 32px;
             margin-bottom: 30px;
-            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.1);
-            border: 1px solid rgba(43,110,155,0.1);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(43, 110, 155, 0.1);
+            transition: transform 0.3s ease;
         }
         
-        @media (max-width: 768px) {
-            .panel {
-                padding: 24px 20px;
-                border-radius: 24px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .panel {
-                padding: 20px 16px;
-            }
+        .panel:hover {
+            transform: translateY(-5px);
         }
         
         .panel h3 {
@@ -154,46 +93,19 @@
             border-bottom: 2px solid #e9f0f5;
         }
         
-        @media (max-width: 480px) {
-            .panel h3 {
-                font-size: 1.2rem;
-                margin-bottom: 16px;
-            }
-        }
-        
         .panel h4 {
             color: #2b6e9b;
             font-size: 1.2rem;
             margin: 30px 0 20px;
         }
         
-        @media (max-width: 480px) {
-            .panel h4 {
-                font-size: 1rem;
-                margin: 20px 0 16px;
-            }
-        }
-        
-        /* 表格响应式 */
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin: 0 -16px;
-            padding: 0 16px;
-        }
-        
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 600px;
-            font-size: 0.95rem;
-        }
-        
-        @media (max-width: 480px) {
-            table {
-                min-width: 500px;
-                font-size: 0.85rem;
-            }
+            margin: 20px 0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
         }
         
         th {
@@ -215,9 +127,8 @@
             background: #f8fafc;
         }
         
-        /* 表单元素 */
         input, select {
-            padding: 14px 20px;
+            padding: 12px 20px;
             border-radius: 40px;
             border: 2px solid #e2e8f0;
             width: 100%;
@@ -227,65 +138,42 @@
             background: white;
         }
         
-        @media (max-width: 480px) {
-            input, select {
-                padding: 12px 16px;
-                font-size: 0.95rem;
-            }
-        }
-        
         input:focus, select:focus {
             border-color: #2b6e9b;
-            box-shadow: 0 0 0 4px rgba(43,110,155,0.1);
+            box-shadow: 0 0 0 4px rgba(43, 110, 155, 0.1);
         }
         
-        /* 按钮 */
         .btn {
             background: #2b6e9b;
             color: white;
             border: none;
-            padding: 14px 28px;
+            padding: 12px 28px;
             border-radius: 40px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(43,110,155,0.2);
-            font-size: 1rem;
-        }
-        
-        @media (max-width: 480px) {
-            .btn {
-                padding: 12px 20px;
-                font-size: 0.95rem;
-                width: 100%;
-            }
+            box-shadow: 0 4px 12px rgba(43, 110, 155, 0.2);
+            font-size: 0.95rem;
         }
         
         .btn:hover {
             background: #1d4f73;
             transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(43, 110, 155, 0.3);
         }
         
         .btn-danger {
             background: #b91c1c;
-            box-shadow: 0 4px 12px rgba(185,28,28,0.2);
+            box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2);
             padding: 8px 20px;
             font-size: 0.9rem;
         }
         
-        @media (max-width: 480px) {
-            .btn-danger {
-                padding: 6px 12px;
-                font-size: 0.8rem;
-                width: auto;
-            }
-        }
-        
         .btn-danger:hover {
             background: #7f1515;
+            box-shadow: 0 8px 20px rgba(185, 28, 28, 0.3);
         }
         
-        /* 按钮组 - 响应式 */
         .btn-group {
             display: flex;
             gap: 16px;
@@ -298,19 +186,32 @@
             border: 1px solid #e2e8f0;
         }
         
-        @media (max-width: 768px) {
-            .btn-group {
-                flex-direction: column;
-                padding: 20px;
-                gap: 12px;
-            }
-            
-            .btn-group input, .btn-group select {
-                width: 100%;
-            }
+        .btn-group input, .btn-group select {
+            flex: 1;
+            min-width: 200px;
         }
         
-        .hidden { display: none; }
+        .time-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .time-input-group input {
+            flex: 1;
+            min-width: 100px;
+        }
+        
+        .time-separator {
+            color: #64748b;
+            font-weight: 600;
+        }
+        
+        .hidden {
+            display: none;
+        }
         
         .message {
             color: #b91c1c;
@@ -322,7 +223,15 @@
             font-size: 0.95rem;
         }
         
-        /* 密码单元格 */
+        .success {
+            color: #2b6e9b;
+            padding: 12px 20px;
+            background: #e6f0f7;
+            border-radius: 40px;
+            border: 1px solid #c1d9ec;
+            margin: 10px 0;
+        }
+        
         .password-cell {
             cursor: pointer;
             user-select: none;
@@ -330,14 +239,21 @@
         }
         
         .password-hidden {
+            font-family: monospace;
             background: #f1f5f9;
             padding: 8px 16px;
             border-radius: 30px;
             color: #94a3b8;
             display: inline-block;
+            transition: all 0.2s ease;
+        }
+        
+        .password-hidden:hover {
+            background: #e2e8f0;
         }
         
         .password-visible {
+            font-family: monospace;
             background: #f1f5f9;
             padding: 8px 16px;
             border-radius: 30px;
@@ -345,43 +261,56 @@
             display: inline-block;
             font-weight: 500;
         }
-        
-        @media (max-width: 480px) {
-            .password-hidden, .password-visible {
-                padding: 6px 12px;
-                font-size: 0.85rem;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="navbar">
-        <h2>🧪 DCC 管理后台</h2>
-        <button class="btn" id="logoutBtn" style="width:auto; padding:10px 24px;">退出</button>
+        <h2>shi guan DCC 管理后台</h2>
+        <button class="btn" id="logoutBtn">退出登录</button>
     </div>
 
     <div class="container">
         <div class="tabs">
-            <button class="tab-btn active" data-tab="courses">📅 排课</button>
-            <button class="tab-btn" data-tab="instructors">👥 讲师</button>
-            <button class="tab-btn" data-tab="users">👤 学员</button>
-            <button class="tab-btn" data-tab="registrations">📋 报名</button>
+            <button class="tab-btn active" data-tab="courses">📅 排课管理</button>
+            <button class="tab-btn" data-tab="instructors">👥 讲师管理</button>
+            <button class="tab-btn" data-tab="users">👤 学员管理</button>
+            <button class="tab-btn" data-tab="registrations">📋 报名列表</button>
         </div>
 
         <!-- 排课管理面板 -->
         <div class="panel" id="coursesPanel">
             <h3>📅 课程列表</h3>
-            <div class="table-responsive">
-                <table>
-                    <thead><tr><th>日期</th><th>讲师</th><th>课程</th><th>操作</th></tr></thead>
-                    <tbody id="coursesTable"><tr><td colspan="4" style="text-align:center;">加载中...</td></tr></tbody>
-                </table>
-            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>时间</th>
+                        <th>讲师</th>
+                        <th>课程名称</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="coursesTable">
+                    <tr><td colspan="5" style="text-align:center; padding:40px;">加载中...</td></tr>
+                </tbody>
+            </table>
+            
             <h4>➕ 新增课程</h4>
             <div class="btn-group">
-                <input type="date" id="newCourseDate">
-                <select id="newCourseInstructor"><option value="">选择讲师</option></select>
-                <input type="text" id="newCourseName" placeholder="课程名称">
+                <input type="date" id="newCourseDate" style="flex:1;">
+                
+                <!-- 时间段选择 -->
+                <div class="time-input-group">
+                    <input type="time" id="newStartTime" value="15:30" style="flex:1;">
+                    <span class="time-separator">至</span>
+                    <input type="time" id="newEndTime" value="17:00" style="flex:1;">
+                </div>
+                
+                <select id="newCourseInstructor" style="flex:1;">
+                    <option value="">选择讲师</option>
+                </select>
+                
+                <input type="text" id="newCourseName" placeholder="课程名称" style="flex:1;">
                 <button class="btn" id="addCourseBtn">添加课程</button>
             </div>
             <div id="courseMessage" class="message"></div>
@@ -390,12 +319,19 @@
         <!-- 讲师管理面板 -->
         <div class="panel hidden" id="instructorsPanel">
             <h3>👥 讲师列表</h3>
-            <div class="table-responsive">
-                <table>
-                    <thead><tr><th>姓名</th><th>专长</th><th>操作</th></tr></thead>
-                    <tbody id="instructorsTable"><tr><td colspan="3" style="text-align:center;">加载中...</td></tr></tbody>
-                </table>
-            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>姓名</th>
+                        <th>专长</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="instructorsTable">
+                    <tr><td colspan="3" style="text-align:center; padding:40px;">加载中...</td></tr>
+                </tbody>
+            </table>
+            
             <h4>➕ 添加讲师</h4>
             <div class="btn-group">
                 <input type="text" id="newInstName" placeholder="讲师姓名">
@@ -408,30 +344,47 @@
         <!-- 学员管理面板 -->
         <div class="panel hidden" id="usersPanel">
             <h3>👤 学员列表</h3>
-            <div class="table-responsive">
-                <table>
-                    <thead><tr><th>姓名</th><th>密码</th><th>操作</th></tr></thead>
-                    <tbody id="usersTable"><tr><td colspan="3" style="text-align:center;">加载中...</td></tr></tbody>
-                </table>
-            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>姓名</th>
+                        <th>密码</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTable">
+                    <tr><td colspan="3" style="text-align:center; padding:40px;">加载中...</td></tr>
+                </tbody>
+            </table>
             <div id="userMessage" class="message"></div>
         </div>
 
         <!-- 报名列表面板 -->
         <div class="panel hidden" id="registrationsPanel">
             <h3>📋 所有报名记录</h3>
-            <div class="table-responsive">
-                <table>
-                    <thead><tr><th>学员</th><th>课程</th><th>日期</th><th>讲师</th></tr></thead>
-                    <tbody id="registrationsTable"><tr><td colspan="4" style="text-align:center;">加载中...</td></tr></tbody>
-                </table>
-            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>学员</th>
+                        <th>课程</th>
+                        <th>日期</th>
+                        <th>时间</th>
+                        <th>讲师</th>
+                        <th>报名时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="registrationsTable">
+                    <tr><td colspan="7" style="text-align:center; padding:40px;">加载中...</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
     <script>
         const SUPABASE_URL = 'https://fdwacsuphbpxfariohan.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkd2Fjc3VwaGJweGZhcmlvaGFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMDM1MzcsImV4cCI6MjA4NjY3OTUzN30.q1CzBhIw8xVYL4efkTvGYLkeC04dnBSCPcAWk7LHxxU';
+        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         if (sessionStorage.getItem('userRole') !== 'admin') {
@@ -444,12 +397,19 @@
             btn.onclick = function() {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
+                
                 document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
                 document.getElementById(this.dataset.tab + 'Panel').classList.remove('hidden');
-                if (this.dataset.tab === 'instructors') loadInstructors();
-                else if (this.dataset.tab === 'courses') loadCourses();
-                else if (this.dataset.tab === 'users') loadUsers();
-                else if (this.dataset.tab === 'registrations') loadRegistrations();
+                
+                if (this.dataset.tab === 'instructors') {
+                    loadInstructors();
+                } else if (this.dataset.tab === 'courses') {
+                    loadCourses();
+                } else if (this.dataset.tab === 'users') {
+                    loadUsers();
+                } else if (this.dataset.tab === 'registrations') {
+                    loadRegistrations();
+                }
             };
         });
 
@@ -472,19 +432,25 @@
                 .eq('role', 'student')
                 .order('id');
             
-            if (error) { document.getElementById('usersTable').innerHTML = `<tr><td colspan="3">加载失败</td></tr>`; return; }
+            if (error) {
+                document.getElementById('usersTable').innerHTML = `<tr><td colspan="3" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
+                return;
+            }
             
             const tbody = document.getElementById('usersTable');
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3">暂无学员</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:40px;">暂无学员</td></tr>';
             } else {
                 let html = '';
                 data.forEach(user => {
                     const isVisible = visiblePasswords[user.id] || false;
+                    
                     html += `<tr>
                         <td>${user.name}</td>
                         <td class="password-cell" onclick="togglePassword('${user.id}')">
-                            ${isVisible ? `<span class="password-visible">${user.password}</span>` : `<span class="password-hidden">•••••••</span>`}
+                            ${isVisible 
+                                ? `<span class="password-visible">${user.password}</span>` 
+                                : `<span class="password-hidden">•••••••</span>`}
                         </td>
                         <td><button class="btn-danger btn" onclick="deleteUser('${user.id}')">删除</button></td>
                     </tr>`;
@@ -494,77 +460,171 @@
         }
 
         window.deleteUser = async function(id) {
-            const { error } = await supabaseClient.from('users').delete().eq('id', id);
-            if (!error) {
+            const { error } = await supabaseClient
+                .from('users')
+                .delete()
+                .eq('id', id);
+            
+            if (error) {
+                document.getElementById('userMessage').innerText = '删除失败：' + error.message;
+            } else {
+                document.getElementById('userMessage').innerText = '✅ 删除成功';
                 delete visiblePasswords[id];
                 loadUsers();
             }
         };
 
         async function loadInstructors() {
-            const { data, error } = await supabaseClient.from('instructors').select('*').order('id');
-            if (error) return;
+            const { data, error } = await supabaseClient
+                .from('instructors')
+                .select('*')
+                .order('id');
+            
+            if (error) {
+                document.getElementById('instructorsTable').innerHTML = `<tr><td colspan="3" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
+                return;
+            }
+            
             const tbody = document.getElementById('instructorsTable');
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3">暂无讲师</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:40px;">暂无讲师，请添加</td></tr>';
             } else {
                 let html = '';
                 data.forEach(inst => {
-                    html += `<tr><td>${inst.name}</td><td>${inst.specialty}</td><td><button class="btn-danger btn" onclick="deleteInstructor('${inst.id}')">删除</button></td></tr>`;
+                    html += `<tr>
+                        <td>${inst.name}</td>
+                        <td>${inst.specialty}</td>
+                        <td><button class="btn-danger btn" onclick="deleteInstructor('${inst.id}')">删除</button></td>
+                    </tr>`;
                 });
                 tbody.innerHTML = html;
             }
+            
             const select = document.getElementById('newCourseInstructor');
             select.innerHTML = '<option value="">选择讲师</option>';
-            if (data) data.forEach(inst => select.innerHTML += `<option value="${inst.id}">${inst.name}</option>`);
+            if (data) {
+                data.forEach(inst => {
+                    select.innerHTML += `<option value="${inst.id}">${inst.name}</option>`;
+                });
+            }
         }
 
         window.deleteInstructor = async function(id) {
-            const { error } = await supabaseClient.from('instructors').delete().eq('id', id);
-            if (!error) { loadInstructors(); loadCourses(); }
+            const { error } = await supabaseClient
+                .from('instructors')
+                .delete()
+                .eq('id', id);
+            
+            if (error) {
+                document.getElementById('instructorMessage').innerText = '删除失败：' + error.message;
+            } else {
+                document.getElementById('instructorMessage').innerText = '✅ 删除成功';
+                loadInstructors();
+                loadCourses();
+            }
         };
 
         document.getElementById('addInstructorBtn').onclick = async function() {
             const name = document.getElementById('newInstName').value.trim();
             const specialty = document.getElementById('newInstSpecialty').value.trim();
-            if (!name || !specialty) { document.getElementById('instructorMessage').innerText = '请填写完整'; return; }
-            const { error } = await supabaseClient.from('instructors').insert([{ name, specialty }]);
-            if (!error) {
+            
+            if (!name || !specialty) {
+                document.getElementById('instructorMessage').innerText = '请填写完整';
+                return;
+            }
+            
+            const { error } = await supabaseClient
+                .from('instructors')
+                .insert([{ name, specialty }]);
+            
+            if (error) {
+                document.getElementById('instructorMessage').innerText = '添加失败：' + error.message;
+            } else {
                 document.getElementById('newInstName').value = '';
                 document.getElementById('newInstSpecialty').value = '';
+                document.getElementById('instructorMessage').innerText = '✅ 添加成功';
                 loadInstructors();
             }
         };
 
         async function loadCourses() {
-            const { data, error } = await supabaseClient.from('courses').select('*, instructors(*)').order('date');
-            if (error) return;
+            const { data, error } = await supabaseClient
+                .from('courses')
+                .select('*, instructors(*)')
+                .order('date');
+            
+            if (error) {
+                document.getElementById('coursesTable').innerHTML = `<tr><td colspan="5" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
+                return;
+            }
+            
             const tbody = document.getElementById('coursesTable');
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4">暂无课程</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">暂无课程</td></tr>';
             } else {
                 let html = '';
                 data.forEach(c => {
-                    html += `<tr><td>${c.date}</td><td>${c.instructors?.name || '未知'}</td><td>${c.course_name}</td><td><button class="btn-danger btn" onclick="deleteCourse('${c.id}')">删除</button></td></tr>`;
+                    // 解析时间段，如果没有则显示默认
+                    const timeRange = c.time_range || '15:30-17:00';
+                    
+                    html += `<tr>
+                        <td>${c.date}</td>
+                        <td>${timeRange}</td>
+                        <td>${c.instructors?.name || '未知'}</td>
+                        <td>${c.course_name}</td>
+                        <td><button class="btn-danger btn" onclick="deleteCourse('${c.id}')">删除</button></td>
+                    </tr>`;
                 });
                 tbody.innerHTML = html;
             }
         }
 
         window.deleteCourse = async function(id) {
-            const { error } = await supabaseClient.from('courses').delete().eq('id', id);
-            if (!error) loadCourses();
+            const { error } = await supabaseClient
+                .from('courses')
+                .delete()
+                .eq('id', id);
+            
+            if (error) {
+                document.getElementById('courseMessage').innerText = '删除失败：' + error.message;
+            } else {
+                document.getElementById('courseMessage').innerText = '✅ 删除成功';
+                loadCourses();
+            }
         };
 
         document.getElementById('addCourseBtn').onclick = async function() {
             const date = document.getElementById('newCourseDate').value;
+            const startTime = document.getElementById('newStartTime').value;
+            const endTime = document.getElementById('newEndTime').value;
             const instructor_id = document.getElementById('newCourseInstructor').value;
             const course_name = document.getElementById('newCourseName').value.trim();
-            if (!date || !instructor_id || !course_name) { document.getElementById('courseMessage').innerText = '请填写完整'; return; }
-            const { error } = await supabaseClient.from('courses').insert([{ date, instructor_id, course_name }]);
-            if (!error) {
+            
+            if (!date || !startTime || !endTime || !instructor_id || !course_name) {
+                document.getElementById('courseMessage').innerText = '请填写完整信息';
+                return;
+            }
+            
+            // 组合时间段
+            const time_range = `${startTime}-${endTime}`;
+            
+            const { error } = await supabaseClient
+                .from('courses')
+                .insert([{ 
+                    date, 
+                    time_range,
+                    instructor_id, 
+                    course_name 
+                }]);
+            
+            if (error) {
+                document.getElementById('courseMessage').innerText = '添加失败：' + error.message;
+            } else {
                 document.getElementById('newCourseDate').value = '';
+                document.getElementById('newStartTime').value = '15:30';
+                document.getElementById('newEndTime').value = '17:00';
                 document.getElementById('newCourseName').value = '';
+                document.getElementById('courseMessage').innerText = '✅ 添加成功';
                 loadCourses();
             }
         };
@@ -574,18 +634,48 @@
                 .from('registrations')
                 .select('*, courses(*, instructors(*)), users(name)')
                 .order('registered_at', { ascending: false });
-            if (error) return;
+            
+            if (error) {
+                document.getElementById('registrationsTable').innerHTML = `<tr><td colspan="7" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
+                return;
+            }
+            
             const tbody = document.getElementById('registrationsTable');
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4">暂无报名</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px;">暂无报名记录</td></tr>';
             } else {
                 let html = '';
                 data.forEach(r => {
-                    html += `<tr><td>${r.users?.name || r.student_name}</td><td>${r.courses?.course_name || '--'}</td><td>${r.courses?.date || '--'}</td><td>${r.courses?.instructors?.name || '--'}</td></tr>`;
+                    const timeRange = r.courses?.time_range || '15:30-17:00';
+                    
+                    html += `<tr>
+                        <td>${r.users?.name || r.student_name}</td>
+                        <td>${r.courses?.course_name || '--'}</td>
+                        <td>${r.courses?.date || '--'}</td>
+                        <td>${timeRange}</td>
+                        <td>${r.courses?.instructors?.name || '--'}</td>
+                        <td>${new Date(r.registered_at).toLocaleString()}</td>
+                        <td><button class="btn-danger btn" onclick="deleteRegistration('${r.id}')">删除</button></td>
+                    </tr>`;
                 });
                 tbody.innerHTML = html;
             }
         }
+
+        // 删除报名记录 - 无确认框
+        window.deleteRegistration = async function(id) {
+            const { error } = await supabaseClient
+                .from('registrations')
+                .delete()
+                .eq('id', id);
+            
+            if (error) {
+                document.getElementById('registrationsTable').innerHTML = `<tr><td colspan="7" style="color:red; padding:40px;">删除失败：${error.message}</td></tr>`;
+            } else {
+                // 重新加载报名列表
+                loadRegistrations();
+            }
+        };
 
         document.getElementById('logoutBtn').onclick = function() {
             sessionStorage.clear();
