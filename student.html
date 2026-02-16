@@ -175,15 +175,27 @@
             min-width: 100px;
         }
         
-        /* 日历网格 - 现代化设计 */
+        /* 日历容器 - 手机端可横向滑动 */
+        .calendar-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 10px;
+            margin-bottom: -10px;
+        }
+        
+        /* 日历网格 - 电脑端正常，手机端固定宽度 */
         .calendar-grid {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
+            grid-template-columns: repeat(7, minmax(100px, 1fr));
             gap: 8px;
+            min-width: 700px; /* 保证7列完整显示 */
         }
         
         @media (min-width: 768px) {
             .calendar-grid {
+                min-width: 100%;
+                grid-template-columns: repeat(7, 1fr);
                 gap: 12px;
             }
         }
@@ -211,7 +223,7 @@
             background: #f8fafc;
             border-radius: 20px;
             padding: 12px 6px;
-            min-height: 90px;
+            min-height: 120px;
             border: 1px solid #e9f0f5;
             transition: all 0.2s ease;
             cursor: default;
@@ -223,7 +235,7 @@
         @media (min-width: 768px) {
             .day-cell {
                 padding: 16px 10px;
-                min-height: 120px;
+                min-height: 140px;
             }
         }
         
@@ -306,7 +318,7 @@
         
         .day-number {
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             color: #1e405e;
             font-size: 1rem;
         }
@@ -314,7 +326,7 @@
         @media (min-width: 768px) {
             .day-number {
                 font-size: 1.2rem;
-                margin-bottom: 10px;
+                margin-bottom: 8px;
             }
         }
         
@@ -326,7 +338,7 @@
             font-weight: 600;
             color: #2b6e9b;
             border: 1px solid #d4e2f0;
-            margin-top: 4px;
+            margin-top: 2px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -337,7 +349,7 @@
             .course-tag {
                 padding: 6px 12px;
                 font-size: 0.8rem;
-                margin-top: 6px;
+                margin-top: 4px;
             }
         }
         
@@ -347,7 +359,7 @@
             padding: 2px 6px;
             font-size: 0.6rem;
             color: #1d4f73;
-            margin-top: 4px;
+            margin-top: 2px;
             text-align: center;
             font-weight: 500;
         }
@@ -356,7 +368,31 @@
             .time-tag {
                 padding: 4px 10px;
                 font-size: 0.7rem;
-                margin-top: 6px;
+                margin-top: 4px;
+            }
+        }
+        
+        /* 地点标签 - 新增样式 */
+        .location-tag {
+            background: #e1f0fa;
+            border-radius: 12px;
+            padding: 2px 6px;
+            font-size: 0.6rem;
+            color: #1d4f73;
+            margin-top: 2px;
+            text-align: center;
+            font-weight: 500;
+            border: 1px solid #b8d6f0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        @media (min-width: 768px) {
+            .location-tag {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                margin-top: 4px;
             }
         }
         
@@ -534,6 +570,7 @@
             box-shadow: 0 20px 40px -12px rgba(0, 30, 60, 0.15);
             border: 1px solid rgba(43, 110, 155, 0.1);
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .my-courses h3 {
@@ -555,16 +592,7 @@
         .courses-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 700px;
-        }
-        
-        @media (max-width: 768px) {
-            .my-courses {
-                padding: 20px;
-            }
-            .courses-table {
-                min-width: 650px;
-            }
+            min-width: 750px;
         }
         
         .courses-table th {
@@ -644,7 +672,7 @@
             animation: fadeIn 0.5s ease-out;
         }
         
-        /* 移动端小屏幕优化 */
+        /* 手机端小屏幕优化 */
         @media (max-width: 480px) {
             .navbar {
                 padding: 12px 16px;
@@ -676,23 +704,53 @@
                 font-size: 1.3rem;
             }
             
+            .calendar-panel h2::before {
+                font-size: 1.5rem;
+            }
+            
+            .calendar-container {
+                margin: 0 -18px;
+                padding: 0 18px;
+                width: calc(100% + 36px);
+            }
+            
+            .calendar-header h3 {
+                font-size: 1.2rem;
+                padding: 6px 16px;
+            }
+            
+            .month-nav .btn {
+                min-width: 80px;
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
             .day-cell {
-                min-height: 70px;
-                padding: 8px 4px;
+                min-height: 110px;
+                padding: 10px 4px;
             }
             
             .day-number {
                 font-size: 0.9rem;
+                margin-bottom: 4px;
             }
             
             .course-tag {
                 font-size: 0.6rem;
-                padding: 2px 4px;
+                padding: 3px 4px;
+                margin-top: 2px;
             }
             
             .time-tag {
-                font-size: 0.5rem;
-                padding: 1px 3px;
+                font-size: 0.55rem;
+                padding: 2px 4px;
+                margin-top: 2px;
+            }
+            
+            .location-tag {
+                font-size: 0.55rem;
+                padding: 2px 4px;
+                margin-top: 2px;
             }
             
             .modal-content {
@@ -701,6 +759,41 @@
             
             .modal-content h2 {
                 font-size: 1.4rem;
+            }
+            
+            .modal-content .info-row {
+                font-size: 0.9rem;
+                padding: 8px 0;
+            }
+            
+            .modal-content .info-label {
+                min-width: 60px;
+                padding: 2px 8px;
+            }
+            
+            .courses-table {
+                min-width: 650px;
+            }
+            
+            .courses-table th {
+                padding: 12px 8px;
+                font-size: 0.8rem;
+            }
+            
+            .courses-table td {
+                padding: 12px 8px;
+                font-size: 0.8rem;
+            }
+            
+            .note-cell {
+                max-width: 150px;
+                font-size: 0.75rem;
+                padding: 3px 6px;
+            }
+            
+            .cancel-btn {
+                padding: 4px 10px;
+                font-size: 0.7rem;
             }
         }
     </style>
@@ -728,14 +821,17 @@
                 </div>
             </div>
 
-            <div class="calendar-grid" id="calendarGrid">
-                <div class="weekday">一</div>
-                <div class="weekday">二</div>
-                <div class="weekday">三</div>
-                <div class="weekday">四</div>
-                <div class="weekday">五</div>
-                <div class="weekday">六</div>
-                <div class="weekday">日</div>
+            <!-- 可滑动的日历容器 -->
+            <div class="calendar-container">
+                <div class="calendar-grid" id="calendarGrid">
+                    <div class="weekday">一</div>
+                    <div class="weekday">二</div>
+                    <div class="weekday">三</div>
+                    <div class="weekday">四</div>
+                    <div class="weekday">五</div>
+                    <div class="weekday">六</div>
+                    <div class="weekday">日</div>
+                </div>
             </div>
         </div>
 
@@ -1008,6 +1104,7 @@
             const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
             const todayStr = beijingTime.toISOString().split('T')[0];
             
+            // 保留星期行（前7个是weekday）
             while (grid.children.length > 7) {
                 grid.removeChild(grid.lastChild);
             }
@@ -1033,6 +1130,7 @@
                     const isRegistered = isCourseRegistered(course.id);
                     const isEnded = isCourseEnded(course.date);
                     const timeRange = course.time_range || '待定';
+                    const location = course.location || '未指定';
                     
                     if (isEnded) {
                         dayDiv.classList.add('ended');
@@ -1044,6 +1142,7 @@
                     
                     dayDiv.innerHTML += `<div class="course-tag">${course.course_name}</div>`;
                     dayDiv.innerHTML += `<div class="time-tag">${timeRange}</div>`;
+                    dayDiv.innerHTML += `<div class="location-tag">${location}</div>`;
                     
                     if (!isRegistered && !isEnded) {
                         dayDiv.onclick = () => showCourseModal(course);
