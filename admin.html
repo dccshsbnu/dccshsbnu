@@ -121,13 +121,70 @@
             padding: 16px 12px;
             border-bottom: 1px solid #e9f0f5;
             color: #475569;
+            vertical-align: top;
+            word-break: break-word;
         }
         
         tr:hover td {
             background: #f8fafc;
         }
         
-        input, select {
+        /* 高亮样式 - 今天课程 */
+        .today-highlight {
+            background: linear-gradient(145deg, #fff3cd, #fef9e7);
+        }
+        
+        /* 高亮样式 - 明天课程 */
+        .tomorrow-highlight {
+            background: linear-gradient(145deg, #bae7ff, #e6f7ff);
+        }
+        
+        /* 已结束课程样式 */
+        .ended-course {
+            opacity: 0.6;
+            background: #f1f5f9;
+            position: relative;
+        }
+        
+        .ended-course td {
+            color: #94a3b8;
+        }
+        
+        .ended-badge {
+            display: inline-block;
+            background: #94a3b8;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .badge-today {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .badge-tomorrow {
+            background: #1890ff;
+            color: white;
+        }
+        
+        .badge-ended {
+            background: #94a3b8;
+            color: white;
+        }
+        
+        input, select, textarea {
             padding: 12px 20px;
             border-radius: 40px;
             border: 2px solid #e2e8f0;
@@ -138,9 +195,17 @@
             background: white;
         }
         
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             border-color: #2b6e9b;
             box-shadow: 0 0 0 4px rgba(43, 110, 155, 0.1);
+        }
+        
+        textarea {
+            border-radius: 30px;
+            resize: vertical;
+            min-height: 80px;
+            max-height: 300px;
+            line-height: 1.6;
         }
         
         .btn {
@@ -179,16 +244,20 @@
             gap: 16px;
             margin: 25px 0 10px;
             flex-wrap: wrap;
-            align-items: center;
+            align-items: flex-start;
             background: #f8fafc;
             padding: 24px;
             border-radius: 30px;
             border: 1px solid #e2e8f0;
         }
         
-        .btn-group input, .btn-group select {
+        .btn-group input, .btn-group select, .btn-group textarea {
             flex: 1;
             min-width: 200px;
+        }
+        
+        .btn-group textarea {
+            min-height: 100px;
         }
         
         .time-input-group {
@@ -207,6 +276,13 @@
         .time-separator {
             color: #64748b;
             font-weight: 600;
+        }
+        
+        .note-cell {
+            max-width: 250px;
+            white-space: normal;
+            word-wrap: break-word;
+            line-height: 1.5;
         }
         
         .hidden {
@@ -261,6 +337,29 @@
             display: inline-block;
             font-weight: 500;
         }
+        
+        .location-tag {
+            background: #e6f0f7;
+            border-radius: 16px;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            color: #1d4f73;
+            display: inline-block;
+            max-width: 100%;
+            word-break: break-word;
+        }
+        
+        .note-tag {
+            background: #fff3cd;
+            border-radius: 16px;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            color: #856404;
+            display: inline-block;
+            max-width: 100%;
+            word-break: break-word;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
@@ -287,30 +386,40 @@
                         <th>时间</th>
                         <th>讲师</th>
                         <th>课程名称</th>
+                        <th>地点</th>
+                        <th>备注</th>
+                        <th>状态</th>
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody id="coursesTable">
-                    <tr><td colspan="5" style="text-align:center; padding:40px;">加载中...</td></tr>
+                    <tr><td colspan="8" style="text-align:center; padding:40px;">加载中...</td></tr>
                 </tbody>
             </table>
             
             <h4>➕ 新增课程</h4>
             <div class="btn-group">
-                <input type="date" id="newCourseDate" style="flex:1;">
+                <input type="date" id="newCourseDate" style="flex:1;" required>
                 
                 <!-- 时间段选择 -->
                 <div class="time-input-group">
-                    <input type="time" id="newStartTime" value="15:30" style="flex:1;">
+                    <input type="time" id="newStartTime" placeholder="开始时间" style="flex:1;" required>
                     <span class="time-separator">至</span>
-                    <input type="time" id="newEndTime" value="17:00" style="flex:1;">
+                    <input type="time" id="newEndTime" placeholder="结束时间" style="flex:1;" required>
                 </div>
                 
-                <select id="newCourseInstructor" style="flex:1;">
+                <select id="newCourseInstructor" style="flex:1;" required>
                     <option value="">选择讲师</option>
                 </select>
                 
-                <input type="text" id="newCourseName" placeholder="课程名称" style="flex:1;">
+                <input type="text" id="newCourseName" placeholder="课程名称" style="flex:1;" required>
+                
+                <!-- 地点输入 -->
+                <input type="text" id="newCourseLocation" placeholder="上课地点" style="flex:1;">
+                
+                <!-- 备注输入 - 可以拉宽变高 -->
+                <textarea id="newCourseNote" placeholder="备注" style="flex:1;" rows="3"></textarea>
+                
                 <button class="btn" id="addCourseBtn">添加课程</button>
             </div>
             <div id="courseMessage" class="message"></div>
@@ -370,12 +479,15 @@
                         <th>日期</th>
                         <th>时间</th>
                         <th>讲师</th>
+                        <th>地点</th>
+                        <th>备注</th>
+                        <th>状态</th>
                         <th>报名时间</th>
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody id="registrationsTable">
-                    <tr><td colspan="7" style="text-align:center; padding:40px;">加载中...</td></tr>
+                    <tr><td colspan="10" style="text-align:center; padding:40px;">加载中...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -547,31 +659,78 @@
             }
         };
 
+        // 判断课程是否已结束
+        function isCourseEnded(courseDate) {
+            // 获取今天的日期（北京时间）
+            const now = new Date();
+            const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
+            const todayStr = beijingTime.toISOString().split('T')[0];
+            
+            return courseDate < todayStr; // 课程日期小于今天，说明已结束
+        }
+
         async function loadCourses() {
             const { data, error } = await supabaseClient
                 .from('courses')
                 .select('*, instructors(*)')
-                .order('date');
+                .order('date', { ascending: false }); // 改为倒序，日期越晚越靠前
             
             if (error) {
-                document.getElementById('coursesTable').innerHTML = `<tr><td colspan="5" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
+                document.getElementById('coursesTable').innerHTML = `<tr><td colspan="8" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
                 return;
             }
             
             const tbody = document.getElementById('coursesTable');
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">暂无课程</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px;">暂无课程</td></tr>';
             } else {
+                // 获取今天的日期（北京时间）
+                const now = new Date();
+                const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
+                const todayStr = beijingTime.toISOString().split('T')[0];
+                
+                // 获取明天的日期
+                const tomorrow = new Date(beijingTime);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                
                 let html = '';
                 data.forEach(c => {
-                    // 解析时间段，如果没有则显示默认
-                    const timeRange = c.time_range || '15:30-17:00';
+                    const timeRange = c.time_range || '待定';
+                    const location = c.location || '未指定';
+                    const note = c.note || '无';
+                    const isEnded = isCourseEnded(c.date);
                     
-                    html += `<tr>
+                    // 判断是否为今天或明天的课程
+                    let rowClass = '';
+                    let statusText = '';
+                    let statusBadge = '';
+                    
+                    if (isEnded) {
+                        rowClass = 'ended-course';
+                        statusText = '已结束';
+                        statusBadge = '<span class="ended-badge">已结束</span>';
+                    } else if (c.date === todayStr) {
+                        rowClass = 'today-highlight';
+                        statusText = '今天';
+                        statusBadge = '<span class="badge badge-today">今天</span>';
+                    } else if (c.date === tomorrowStr) {
+                        rowClass = 'tomorrow-highlight';
+                        statusText = '明天';
+                        statusBadge = '<span class="badge badge-tomorrow">明天</span>';
+                    } else {
+                        statusText = '未开始';
+                        statusBadge = '<span class="badge" style="background:#e2e8f0; color:#475569;">未开始</span>';
+                    }
+                    
+                    html += `<tr class="${rowClass}">
                         <td>${c.date}</td>
                         <td>${timeRange}</td>
                         <td>${c.instructors?.name || '未知'}</td>
                         <td>${c.course_name}</td>
+                        <td><span class="location-tag">${location}</span></td>
+                        <td><span class="note-tag">${note}</span></td>
+                        <td>${statusBadge}</td>
                         <td><button class="btn-danger btn" onclick="deleteCourse('${c.id}')">删除</button></td>
                     </tr>`;
                 });
@@ -599,9 +758,11 @@
             const endTime = document.getElementById('newEndTime').value;
             const instructor_id = document.getElementById('newCourseInstructor').value;
             const course_name = document.getElementById('newCourseName').value.trim();
+            const location = document.getElementById('newCourseLocation').value.trim();
+            const note = document.getElementById('newCourseNote').value.trim();
             
             if (!date || !startTime || !endTime || !instructor_id || !course_name) {
-                document.getElementById('courseMessage').innerText = '请填写完整信息';
+                document.getElementById('courseMessage').innerText = '请填写必填信息（日期、时间、讲师、课程名称）';
                 return;
             }
             
@@ -614,16 +775,21 @@
                     date, 
                     time_range,
                     instructor_id, 
-                    course_name 
+                    course_name,
+                    location: location || '待定',
+                    note: note || '无'
                 }]);
             
             if (error) {
                 document.getElementById('courseMessage').innerText = '添加失败：' + error.message;
             } else {
+                // 清空表单
                 document.getElementById('newCourseDate').value = '';
-                document.getElementById('newStartTime').value = '15:30';
-                document.getElementById('newEndTime').value = '17:00';
+                document.getElementById('newStartTime').value = '';
+                document.getElementById('newEndTime').value = '';
                 document.getElementById('newCourseName').value = '';
+                document.getElementById('newCourseLocation').value = '';
+                document.getElementById('newCourseNote').value = '';
                 document.getElementById('courseMessage').innerText = '✅ 添加成功';
                 loadCourses();
             }
@@ -633,27 +799,68 @@
             const { data, error } = await supabaseClient
                 .from('registrations')
                 .select('*, courses(*, instructors(*)), users(name)')
-                .order('registered_at', { ascending: false });
+                .order('registered_at', { ascending: false }); // 按报名时间倒序（最新的在前）
             
             if (error) {
-                document.getElementById('registrationsTable').innerHTML = `<tr><td colspan="7" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
+                document.getElementById('registrationsTable').innerHTML = `<tr><td colspan="10" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
                 return;
             }
             
             const tbody = document.getElementById('registrationsTable');
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px;">暂无报名记录</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:40px;">暂无报名记录</td></tr>';
             } else {
+                // 获取今天的日期（北京时间）
+                const now = new Date();
+                const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
+                const todayStr = beijingTime.toISOString().split('T')[0];
+                
+                // 获取明天的日期
+                const tomorrow = new Date(beijingTime);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                
+                // 先按课程日期排序，越晚的越靠前
+                const sortedData = [...data].sort((a, b) => {
+                    const dateA = a.courses?.date || '0000-00-00';
+                    const dateB = b.courses?.date || '0000-00-00';
+                    return dateB.localeCompare(dateA); // 倒序，越晚的越靠前
+                });
+                
                 let html = '';
-                data.forEach(r => {
-                    const timeRange = r.courses?.time_range || '15:30-17:00';
+                sortedData.forEach(r => {
+                    const timeRange = r.courses?.time_range || '待定';
+                    const location = r.courses?.location || '未指定';
+                    const note = r.courses?.note || '无';
+                    const courseDate = r.courses?.date;
+                    const isEnded = isCourseEnded(courseDate);
                     
-                    html += `<tr>
+                    // 判断是否为今天或明天的课程
+                    let rowClass = '';
+                    let statusBadge = '';
+                    
+                    if (isEnded) {
+                        rowClass = 'ended-course';
+                        statusBadge = '<span class="ended-badge">已结束</span>';
+                    } else if (courseDate === todayStr) {
+                        rowClass = 'today-highlight';
+                        statusBadge = '<span class="badge badge-today">今天</span>';
+                    } else if (courseDate === tomorrowStr) {
+                        rowClass = 'tomorrow-highlight';
+                        statusBadge = '<span class="badge badge-tomorrow">明天</span>';
+                    } else {
+                        statusBadge = '<span class="badge" style="background:#e2e8f0; color:#475569;">未开始</span>';
+                    }
+                    
+                    html += `<tr class="${rowClass}">
                         <td>${r.users?.name || r.student_name}</td>
                         <td>${r.courses?.course_name || '--'}</td>
-                        <td>${r.courses?.date || '--'}</td>
+                        <td>${courseDate || '--'}</td>
                         <td>${timeRange}</td>
                         <td>${r.courses?.instructors?.name || '--'}</td>
+                        <td><span class="location-tag">${location}</span></td>
+                        <td><span class="note-tag">${note}</span></td>
+                        <td>${statusBadge}</td>
                         <td>${new Date(r.registered_at).toLocaleString()}</td>
                         <td><button class="btn-danger btn" onclick="deleteRegistration('${r.id}')">删除</button></td>
                     </tr>`;
@@ -670,9 +877,8 @@
                 .eq('id', id);
             
             if (error) {
-                document.getElementById('registrationsTable').innerHTML = `<tr><td colspan="7" style="color:red; padding:40px;">删除失败：${error.message}</td></tr>`;
+                document.getElementById('registrationsTable').innerHTML = `<tr><td colspan="10" style="color:red; padding:40px;">删除失败：${error.message}</td></tr>`;
             } else {
-                // 重新加载报名列表
                 loadRegistrations();
             }
         };
