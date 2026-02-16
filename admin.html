@@ -121,12 +121,19 @@
             padding: 16px 12px;
             border-bottom: 1px solid #e9f0f5;
             color: #475569;
-            vertical-align: top;
+            vertical-align: middle;
             word-break: break-word;
         }
         
         tr:hover td {
             background: #f8fafc;
+        }
+        
+        /* 按钮组 */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
         
         /* 高亮样式 - 今天课程 */
@@ -212,13 +219,14 @@
             background: #2b6e9b;
             color: white;
             border: none;
-            padding: 12px 28px;
+            padding: 8px 16px;
             border-radius: 40px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.2s ease;
             box-shadow: 0 4px 12px rgba(43, 110, 155, 0.2);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
         
         .btn:hover {
@@ -227,11 +235,13 @@
             box-shadow: 0 8px 20px rgba(43, 110, 155, 0.3);
         }
         
+        .btn-edit {
+            background: #2b6e9b;
+        }
+        
         .btn-danger {
             background: #b91c1c;
             box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2);
-            padding: 8px 20px;
-            font-size: 0.9rem;
         }
         
         .btn-danger:hover {
@@ -276,6 +286,114 @@
         .time-separator {
             color: #64748b;
             font-weight: 600;
+        }
+        
+        /* 修改弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 40px;
+            padding: 32px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            transform: translateY(30px);
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-content h3 {
+            color: #1e405e;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eef5f9;
+        }
+        
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .modal-form .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .modal-form .form-row label {
+            font-weight: 600;
+            color: #1e405e;
+            font-size: 1rem;
+        }
+        
+        .modal-form .form-row input,
+        .modal-form .form-row select,
+        .modal-form .form-row textarea {
+            width: 100%;
+            padding: 14px 18px;
+        }
+        
+        .modal-form .time-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .modal-form .time-row input {
+            flex: 1;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .modal-buttons .btn {
+            flex: 1;
+            padding: 14px;
+            font-size: 1rem;
+        }
+        
+        .modal-buttons .btn-secondary {
+            background: #e2e8f0;
+            color: #475569;
+            box-shadow: none;
+            border: 1px solid #cbd5e1;
+        }
+        
+        .modal-buttons .btn-secondary:hover {
+            background: #cbd5e1;
+            transform: translateY(-2px);
         }
         
         .note-cell {
@@ -364,7 +482,7 @@
 </head>
 <body>
     <div class="navbar">
-        <h2>🧪 DCC 管理后台</h2>
+        <h2>👑 DCC 管理后台</h2>
         <button class="btn" id="logoutBtn">退出登录</button>
     </div>
 
@@ -417,7 +535,7 @@
                 <!-- 地点输入 -->
                 <input type="text" id="newCourseLocation" placeholder="上课地点" style="flex:1;">
                 
-                <!-- 备注输入 - 可以拉宽变高 -->
+                <!-- 备注输入 -->
                 <textarea id="newCourseNote" placeholder="备注" style="flex:1;" rows="3"></textarea>
                 
                 <button class="btn" id="addCourseBtn">添加课程</button>
@@ -493,6 +611,55 @@
         </div>
     </div>
 
+    <!-- 修改课程弹窗 -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-content">
+            <h3>✏️ 修改课程</h3>
+            <div class="modal-form">
+                <div class="form-row">
+                    <label>📅 日期</label>
+                    <input type="date" id="editDate" required>
+                </div>
+                
+                <div class="form-row">
+                    <label>⏰ 时间</label>
+                    <div class="time-row">
+                        <input type="time" id="editStartTime" required>
+                        <span>至</span>
+                        <input type="time" id="editEndTime" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <label>👨‍🏫 讲师</label>
+                    <select id="editInstructor" required>
+                        <option value="">选择讲师</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <label>📚 课程名称</label>
+                    <input type="text" id="editCourseName" placeholder="课程名称" required>
+                </div>
+                
+                <div class="form-row">
+                    <label>📍 地点</label>
+                    <input type="text" id="editLocation" placeholder="上课地点">
+                </div>
+                
+                <div class="form-row">
+                    <label>📝 备注</label>
+                    <textarea id="editNote" placeholder="备注" rows="4"></textarea>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" id="saveEditBtn">保存修改</button>
+                <button class="btn btn-secondary" id="closeEditBtn">取消</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://fdwacsuphbpxfariohan.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkd2Fjc3VwaGJweGZhcmlvaGFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMDM1MzcsImV4cCI6MjA4NjY3OTUzN30.q1CzBhIw8xVYL4efkTvGYLkeC04dnBSCPcAWk7LHxxU';
@@ -504,6 +671,33 @@
         }
 
         let visiblePasswords = {};
+        let currentEditCourse = null; // 当前正在编辑的课程
+
+        // 弹窗元素
+        const editModal = document.getElementById('editModal');
+        const editDate = document.getElementById('editDate');
+        const editStartTime = document.getElementById('editStartTime');
+        const editEndTime = document.getElementById('editEndTime');
+        const editInstructor = document.getElementById('editInstructor');
+        const editCourseName = document.getElementById('editCourseName');
+        const editLocation = document.getElementById('editLocation');
+        const editNote = document.getElementById('editNote');
+        const saveEditBtn = document.getElementById('saveEditBtn');
+        const closeEditBtn = document.getElementById('closeEditBtn');
+
+        // 关闭弹窗
+        closeEditBtn.onclick = function() {
+            editModal.classList.remove('active');
+            currentEditCourse = null;
+        };
+
+        // 点击遮罩关闭
+        editModal.onclick = function(e) {
+            if (e.target === editModal) {
+                editModal.classList.remove('active');
+                currentEditCourse = null;
+            }
+        };
 
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.onclick = function() {
@@ -612,11 +806,18 @@
                 tbody.innerHTML = html;
             }
             
-            const select = document.getElementById('newCourseInstructor');
-            select.innerHTML = '<option value="">选择讲师</option>';
+            // 更新新增课程页面的讲师下拉框
+            const newSelect = document.getElementById('newCourseInstructor');
+            newSelect.innerHTML = '<option value="">选择讲师</option>';
+            
+            // 更新修改弹窗的讲师下拉框
+            const editSelect = document.getElementById('editInstructor');
+            editSelect.innerHTML = '<option value="">选择讲师</option>';
+            
             if (data) {
                 data.forEach(inst => {
-                    select.innerHTML += `<option value="${inst.id}">${inst.name}</option>`;
+                    newSelect.innerHTML += `<option value="${inst.id}">${inst.name}</option>`;
+                    editSelect.innerHTML += `<option value="${inst.id}">${inst.name}</option>`;
                 });
             }
         }
@@ -661,19 +862,17 @@
 
         // 判断课程是否已结束
         function isCourseEnded(courseDate) {
-            // 获取今天的日期（北京时间）
             const now = new Date();
             const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
             const todayStr = beijingTime.toISOString().split('T')[0];
-            
-            return courseDate < todayStr; // 课程日期小于今天，说明已结束
+            return courseDate < todayStr;
         }
 
         async function loadCourses() {
             const { data, error } = await supabaseClient
                 .from('courses')
                 .select('*, instructors(*)')
-                .order('date', { ascending: false }); // 改为倒序，日期越晚越靠前
+                .order('date', { ascending: false });
             
             if (error) {
                 document.getElementById('coursesTable').innerHTML = `<tr><td colspan="8" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
@@ -684,12 +883,10 @@
             if (!data || data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px;">暂无课程</td></tr>';
             } else {
-                // 获取今天的日期（北京时间）
                 const now = new Date();
                 const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
                 const todayStr = beijingTime.toISOString().split('T')[0];
                 
-                // 获取明天的日期
                 const tomorrow = new Date(beijingTime);
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 const tomorrowStr = tomorrow.toISOString().split('T')[0];
@@ -701,25 +898,19 @@
                     const note = c.note || '无';
                     const isEnded = isCourseEnded(c.date);
                     
-                    // 判断是否为今天或明天的课程
                     let rowClass = '';
-                    let statusText = '';
                     let statusBadge = '';
                     
                     if (isEnded) {
                         rowClass = 'ended-course';
-                        statusText = '已结束';
                         statusBadge = '<span class="ended-badge">已结束</span>';
                     } else if (c.date === todayStr) {
                         rowClass = 'today-highlight';
-                        statusText = '今天';
                         statusBadge = '<span class="badge badge-today">今天</span>';
                     } else if (c.date === tomorrowStr) {
                         rowClass = 'tomorrow-highlight';
-                        statusText = '明天';
                         statusBadge = '<span class="badge badge-tomorrow">明天</span>';
                     } else {
-                        statusText = '未开始';
                         statusBadge = '<span class="badge" style="background:#e2e8f0; color:#475569;">未开始</span>';
                     }
                     
@@ -731,12 +922,93 @@
                         <td><span class="location-tag">${location}</span></td>
                         <td><span class="note-tag">${note}</span></td>
                         <td>${statusBadge}</td>
-                        <td><button class="btn-danger btn" onclick="deleteCourse('${c.id}')">删除</button></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-edit" onclick="openEditModal('${c.id}')">修改</button>
+                                <button class="btn btn-danger" onclick="deleteCourse('${c.id}')">删除</button>
+                            </div>
+                        </td>
                     </tr>`;
                 });
                 tbody.innerHTML = html;
             }
         }
+
+        // 打开修改弹窗
+        window.openEditModal = async function(courseId) {
+            // 获取课程详细信息
+            const { data, error } = await supabaseClient
+                .from('courses')
+                .select('*')
+                .eq('id', courseId)
+                .single();
+            
+            if (error) {
+                alert('获取课程信息失败：' + error.message);
+                return;
+            }
+            
+            currentEditCourse = data;
+            
+            // 解析时间
+            let startTime = '15:30';
+            let endTime = '17:00';
+            if (data.time_range && data.time_range.includes('-')) {
+                [startTime, endTime] = data.time_range.split('-');
+            }
+            
+            // 填充表单
+            editDate.value = data.date;
+            editStartTime.value = startTime;
+            editEndTime.value = endTime;
+            editInstructor.value = data.instructor_id;
+            editCourseName.value = data.course_name;
+            editLocation.value = data.location || '';
+            editNote.value = data.note || '';
+            
+            editModal.classList.add('active');
+        };
+
+        // 保存修改
+        saveEditBtn.onclick = async function() {
+            if (!currentEditCourse) return;
+            
+            const date = editDate.value;
+            const startTime = editStartTime.value;
+            const endTime = editEndTime.value;
+            const instructor_id = editInstructor.value;
+            const course_name = editCourseName.value.trim();
+            const location = editLocation.value.trim();
+            const note = editNote.value.trim();
+            
+            if (!date || !startTime || !endTime || !instructor_id || !course_name) {
+                alert('请填写必填信息（日期、时间、讲师、课程名称）');
+                return;
+            }
+            
+            const time_range = `${startTime}-${endTime}`;
+            
+            const { error } = await supabaseClient
+                .from('courses')
+                .update({
+                    date,
+                    time_range,
+                    instructor_id,
+                    course_name,
+                    location: location || '待定',
+                    note: note || '无'
+                })
+                .eq('id', currentEditCourse.id);
+            
+            if (error) {
+                alert('修改失败：' + error.message);
+            } else {
+                alert('✅ 修改成功');
+                editModal.classList.remove('active');
+                currentEditCourse = null;
+                loadCourses();
+            }
+        };
 
         window.deleteCourse = async function(id) {
             const { error } = await supabaseClient
@@ -766,7 +1038,6 @@
                 return;
             }
             
-            // 组合时间段
             const time_range = `${startTime}-${endTime}`;
             
             const { error } = await supabaseClient
@@ -783,7 +1054,6 @@
             if (error) {
                 document.getElementById('courseMessage').innerText = '添加失败：' + error.message;
             } else {
-                // 清空表单
                 document.getElementById('newCourseDate').value = '';
                 document.getElementById('newStartTime').value = '';
                 document.getElementById('newEndTime').value = '';
@@ -799,7 +1069,7 @@
             const { data, error } = await supabaseClient
                 .from('registrations')
                 .select('*, courses(*, instructors(*)), users(name)')
-                .order('registered_at', { ascending: false }); // 按报名时间倒序（最新的在前）
+                .order('registered_at', { ascending: false });
             
             if (error) {
                 document.getElementById('registrationsTable').innerHTML = `<tr><td colspan="10" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
@@ -810,21 +1080,18 @@
             if (!data || data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:40px;">暂无报名记录</td></tr>';
             } else {
-                // 获取今天的日期（北京时间）
                 const now = new Date();
                 const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
                 const todayStr = beijingTime.toISOString().split('T')[0];
                 
-                // 获取明天的日期
                 const tomorrow = new Date(beijingTime);
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 const tomorrowStr = tomorrow.toISOString().split('T')[0];
                 
-                // 先按课程日期排序，越晚的越靠前
                 const sortedData = [...data].sort((a, b) => {
                     const dateA = a.courses?.date || '0000-00-00';
                     const dateB = b.courses?.date || '0000-00-00';
-                    return dateB.localeCompare(dateA); // 倒序，越晚的越靠前
+                    return dateB.localeCompare(dateA);
                 });
                 
                 let html = '';
@@ -835,7 +1102,6 @@
                     const courseDate = r.courses?.date;
                     const isEnded = isCourseEnded(courseDate);
                     
-                    // 判断是否为今天或明天的课程
                     let rowClass = '';
                     let statusBadge = '';
                     
@@ -869,7 +1135,6 @@
             }
         }
 
-        // 删除报名记录 - 无确认框
         window.deleteRegistration = async function(id) {
             const { error } = await supabaseClient
                 .from('registrations')
@@ -881,7 +1146,6 @@
             } else {
                 loadRegistrations();
             }
-        };
 
         document.getElementById('logoutBtn').onclick = function() {
             sessionStorage.clear();
