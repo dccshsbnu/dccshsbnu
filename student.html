@@ -158,10 +158,11 @@
             background: #f8fafc;
             border-radius: 16px;
             padding: 16px 12px;
-            min-height: 110px;
+            min-height: 120px;
             border: 1px solid #e2e8f0;
             transition: all 0.2s ease;
             cursor: default;
+            position: relative;
         }
         
         .day-cell.available {
@@ -182,6 +183,37 @@
             background: #f1f5f9;
             border-color: #94a3b8;
             opacity: 0.8;
+            position: relative;
+        }
+        
+        .day-cell.registered::after {
+            content: "✓ 已报名";
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #64748b;
+            color: white;
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: 20px;
+        }
+        
+        .day-cell.ended {
+            opacity: 0.5;
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+        
+        .day-cell.ended::after {
+            content: "✓ 已结束";
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #94a3b8;
+            color: white;
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: 20px;
         }
         
         .day-number {
@@ -194,7 +226,7 @@
         .course-tag {
             background: white;
             border-radius: 20px;
-            padding: 6px 10px;
+            padding: 4px 8px;
             font-size: 0.75rem;
             font-weight: 600;
             color: #2b6e9b;
@@ -209,56 +241,173 @@
         .time-tag {
             background: #e6f0f7;
             border-radius: 16px;
-            padding: 4px 8px;
-            font-size: 0.7rem;
+            padding: 2px 6px;
+            font-size: 0.65rem;
             color: #1d4f73;
             margin-top: 4px;
             text-align: center;
         }
         
-        .registered-badge {
-            background: #64748b;
+        /* 高亮样式 - 今天课程 */
+        .today-highlight {
+            background: linear-gradient(145deg, #fff3cd, #fef9e7);
+        }
+        
+        /* 高亮样式 - 明天课程 */
+        .tomorrow-highlight {
+            background: linear-gradient(145deg, #bae7ff, #e6f7ff);
+        }
+        
+        /* 已结束课程样式 */
+        .ended-course {
+            opacity: 0.6;
+            background: #f1f5f9;
+        }
+        
+        .ended-course td {
+            color: #94a3b8;
+        }
+        
+        .ended-badge {
+            display: inline-block;
+            background: #94a3b8;
             color: white;
-            border-radius: 20px;
-            padding: 4px 8px;
             font-size: 0.7rem;
-            margin-top: 4px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .badge-today {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .badge-tomorrow {
+            background: #1890ff;
+            color: white;
+        }
+        
+        /* 弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 40px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-content h2 {
+            color: #1e405e;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9f0f5;
+        }
+        
+        .modal-content p {
+            margin: 15px 0;
+            line-height: 1.6;
+            color: #475569;
+        }
+        
+        .modal-content .info-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        
+        .modal-content .info-label {
+            font-weight: 600;
+            color: #1e405e;
+            min-width: 80px;
+        }
+        
+        .modal-content .info-value {
+            color: #2b6e9b;
+        }
+        
+        .modal-content .location-info {
+            background: #e6f0f7;
+            padding: 12px;
+            border-radius: 20px;
+            margin: 15px 0;
+            word-break: break-word;
+        }
+        
+        .modal-content .note-info {
+            background: #fff3cd;
+            padding: 12px;
+            border-radius: 20px;
+            margin: 15px 0;
+            color: #856404;
+            word-break: break-word;
+            max-height: 200px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .modal-buttons .btn {
+            flex: 1;
             text-align: center;
         }
         
-        .booking-card {
-            background: white;
-            border-radius: 28px;
-            padding: 32px;
-            margin: 30px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 20px 40px -15px rgba(43, 110, 155, 0.2);
-            border: 1px solid rgba(43, 110, 155, 0.1);
-            animation: slideIn 0.3s ease;
+        .modal-buttons .btn-secondary {
+            background: #e2e8f0;
+            color: #475569;
+            box-shadow: none;
         }
         
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .booking-card h3 {
-            color: #1e405e;
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-        }
-        
-        .booking-card p {
-            color: #64748b;
-            line-height: 1.6;
+        .modal-buttons .btn-secondary:hover {
+            background: #cbd5e1;
         }
         
         .my-courses {
@@ -277,28 +426,28 @@
             border-bottom: 2px solid #e9f0f5;
         }
         
-        table {
+        .courses-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
         }
         
-        th {
+        .courses-table th {
             text-align: left;
             padding: 16px 12px;
             background: #f8fafc;
             color: #1e405e;
             font-weight: 600;
             border-radius: 12px 12px 0 0;
+            font-size: 0.9rem;
         }
         
-        td {
+        .courses-table td {
             padding: 16px 12px;
             border-bottom: 1px solid #e9f0f5;
             color: #475569;
         }
         
-        tr:hover td {
+        .courses-table tr:hover td {
             background: #f8fafc;
         }
         
@@ -306,19 +455,17 @@
             background: #b91c1c;
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 30px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 500;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2);
         }
         
         .cancel-btn:hover {
             background: #7f1515;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(185, 28, 28, 0.3);
         }
         
         .hidden { display: none; }
@@ -331,6 +478,37 @@
             background: #fef2f2;
             border-radius: 30px;
             border: 1px solid #fecaca;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .calendar-grid {
+                gap: 5px;
+            }
+            
+            .day-cell {
+                padding: 10px 5px;
+                min-height: 90px;
+            }
+            
+            .courses-table {
+                font-size: 0.85rem;
+            }
+            
+            .courses-table th, .courses-table td {
+                padding: 10px 5px;
+            }
+            
+            .modal-content {
+                padding: 25px;
+                width: 95%;
+            }
         }
     </style>
 </head>
@@ -368,30 +546,64 @@
             </div>
         </div>
 
-        <div class="booking-card hidden" id="bookingCard">
-            <div>
-                <h3 id="selectedCourseTitle"></h3>
-                <p id="selectedCourseDetail"></p>
-                <div id="registeredWarning" class="warning-text hidden">您已经报名过这门课程</div>
+        <!-- 弹窗 -->
+        <div class="modal-overlay" id="courseModal">
+            <div class="modal-content">
+                <h2 id="modalTitle">课程详情</h2>
+                
+                <div class="info-row">
+                    <span class="info-label">📅 日期：</span>
+                    <span class="info-value" id="modalDate"></span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">⏰ 时间：</span>
+                    <span class="info-value" id="modalTime"></span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">👨‍🏫 讲师：</span>
+                    <span class="info-value" id="modalInstructor"></span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">📚 课程：</span>
+                    <span class="info-value" id="modalCourseName"></span>
+                </div>
+                
+                <div class="location-info" id="modalLocation">
+                    📍 地点：加载中...
+                </div>
+                
+                <div class="note-info" id="modalNote">
+                    📝 备注：加载中...
+                </div>
+                
+                <div id="modalWarning" class="warning-text hidden">您已经报名过这门课程</div>
+                
+                <div class="modal-buttons">
+                    <button class="btn" id="modalConfirmBtn">确认报名</button>
+                    <button class="btn btn-secondary" id="modalCloseBtn">关闭</button>
+                </div>
             </div>
-            <button class="btn" id="confirmRegisterBtn">确认报名</button>
         </div>
 
         <div class="my-courses">
             <h3>📋 我的报名记录</h3>
-            <table>
+            <table class="courses-table">
                 <thead>
                     <tr>
                         <th>日期</th>
                         <th>时间</th>
-                        <th>课程名称</th>
+                        <th>课程</th>
                         <th>讲师</th>
-                        <th>报名时间</th>
+                        <th>地点</th>
+                        <th>状态</th>
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody id="myRegistrations">
-                    <tr><td colspan="6" style="text-align:center; padding:40px;">加载中...</td></tr>
+                    <tr><td colspan="7" style="text-align:center; padding:40px;">加载中...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -423,6 +635,31 @@
         let currentYear = today.getFullYear();
         let currentMonth = today.getMonth();
 
+        // 弹窗元素
+        const modal = document.getElementById('courseModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDate = document.getElementById('modalDate');
+        const modalTime = document.getElementById('modalTime');
+        const modalInstructor = document.getElementById('modalInstructor');
+        const modalCourseName = document.getElementById('modalCourseName');
+        const modalLocation = document.getElementById('modalLocation');
+        const modalNote = document.getElementById('modalNote');
+        const modalWarning = document.getElementById('modalWarning');
+        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+        // 关闭弹窗
+        modalCloseBtn.onclick = function() {
+            modal.classList.remove('active');
+        };
+
+        // 点击遮罩关闭
+        modal.onclick = function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        };
+
         // 页面加载
         window.onload = function() {
             loadCourses();
@@ -444,13 +681,22 @@
             renderCalendar();
         }
 
+        // 判断课程是否已结束
+        function isCourseEnded(courseDate) {
+            // 获取今天的日期（北京时间）
+            const now = new Date();
+            const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
+            const todayStr = beijingTime.toISOString().split('T')[0];
+            
+            return courseDate < todayStr; // 课程日期小于今天，说明已结束
+        }
+
         // 加载报名记录
         async function loadMyRegistrations() {
             const { data, error } = await supabaseClient
                 .from('registrations')
                 .select('*, courses(*, instructors(*))')
-                .eq('student_id', userId)
-                .order('registered_at', { ascending: false });
+                .eq('student_id', userId);
             
             if (error) {
                 console.error('加载报名记录失败:', error);
@@ -459,22 +705,60 @@
             
             myRegistrations = data || [];
             
+            // 获取今天的日期（北京时间）
+            const now = new Date();
+            const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
+            const todayStr = beijingTime.toISOString().split('T')[0];
+            
+            // 获取明天的日期
+            const tomorrow = new Date(beijingTime);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+            
+            // 按课程日期排序，越晚的越靠前
+            const sortedData = [...myRegistrations].sort((a, b) => {
+                const dateA = a.courses?.date || '0000-00-00';
+                const dateB = b.courses?.date || '0000-00-00';
+                return dateB.localeCompare(dateA); // 倒序，越晚的越靠前
+            });
+            
             const tbody = document.getElementById('myRegistrations');
-            if (myRegistrations.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">暂无报名记录</td></tr>';
+            if (sortedData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px;">暂无报名记录</td></tr>';
             } else {
                 let html = '';
-                myRegistrations.forEach(reg => {
-                    const timeRange = reg.courses?.time_range || '15:30-17:00';
+                sortedData.forEach(reg => {
+                    const timeRange = reg.courses?.time_range || '待定';
+                    const location = reg.courses?.location || '未指定';
+                    const courseDate = reg.courses?.date;
+                    const isEnded = isCourseEnded(courseDate);
                     
-                    html += `<tr>
+                    // 判断是否为今天或明天的课程
+                    let rowClass = '';
+                    let statusBadge = '';
+                    
+                    if (isEnded) {
+                        rowClass = 'ended-course';
+                        statusBadge = '<span class="ended-badge">已结束</span>';
+                    } else if (courseDate === todayStr) {
+                        rowClass = 'today-highlight';
+                        statusBadge = '<span class="badge badge-today">今天</span>';
+                    } else if (courseDate === tomorrowStr) {
+                        rowClass = 'tomorrow-highlight';
+                        statusBadge = '<span class="badge badge-tomorrow">明天</span>';
+                    } else {
+                        statusBadge = '<span class="badge" style="background:#e2e8f0; color:#475569;">未开始</span>';
+                    }
+                    
+                    html += `<tr class="${rowClass}">
                         <td>${reg.courses?.date || '--'}</td>
                         <td>${timeRange}</td>
                         <td>${reg.courses?.course_name || '--'}</td>
                         <td>${reg.courses?.instructors?.name || '--'}</td>
-                        <td>${new Date(reg.registered_at).toLocaleString()}</td>
+                        <td>${location}</td>
+                        <td>${statusBadge}</td>
                         <td>
-                            <button class="cancel-btn" onclick="cancelRegistration('${reg.id}')">取消报名</button>
+                            ${!isEnded ? `<button class="cancel-btn" onclick="cancelRegistration('${reg.id}')">取消</button>` : '--'}
                         </td>
                     </tr>`;
                 });
@@ -495,14 +779,11 @@
             if (error) {
                 alert('取消失败：' + error.message);
             } else {
-                // 刷新报名列表和日历
                 loadMyRegistrations();
-                
-                // 如果当前选中的课程正好是取消的，隐藏报名卡片
                 if (selectedCourse) {
                     const stillRegistered = myRegistrations.some(r => r.course_id === selectedCourse.id);
                     if (!stillRegistered) {
-                        document.getElementById('bookingCard').classList.add('hidden');
+                        modal.classList.remove('active');
                         selectedCourse = null;
                     }
                 }
@@ -526,6 +807,11 @@
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
             const grid = document.getElementById('calendarGrid');
+            
+            // 获取今天的日期（北京时间）
+            const now = new Date();
+            const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
+            const todayStr = beijingTime.toISOString().split('T')[0];
             
             // 保留星期行
             while (grid.children.length > 7) {
@@ -551,17 +837,22 @@
                 
                 if (course) {
                     const isRegistered = isCourseRegistered(course.id);
-                    const timeRange = course.time_range || '15:30-17:00';
+                    const isEnded = isCourseEnded(course.date);
+                    const timeRange = course.time_range || '待定';
                     
-                    if (isRegistered) {
+                    if (isEnded) {
+                        dayDiv.classList.add('ended');
+                    } else if (isRegistered) {
                         dayDiv.classList.add('registered');
-                        dayDiv.innerHTML += `<div class="registered-badge">✓ 已报名</div>`;
-                        dayDiv.innerHTML += `<div class="time-tag">${timeRange}</div>`;
                     } else {
                         dayDiv.classList.add('available');
-                        dayDiv.innerHTML += `<div class="course-tag">${course.course_name}</div>`;
-                        dayDiv.innerHTML += `<div class="time-tag">${timeRange}</div>`;
-                        dayDiv.onclick = () => selectCourse(course);
+                    }
+                    
+                    dayDiv.innerHTML += `<div class="course-tag">${course.course_name}</div>`;
+                    dayDiv.innerHTML += `<div class="time-tag">${timeRange}</div>`;
+                    
+                    if (!isRegistered && !isEnded) {
+                        dayDiv.onclick = () => showCourseModal(course);
                     }
                 }
                 
@@ -577,42 +868,42 @@
             }
         }
 
-        // 选择课程
-        function selectCourse(course) {
+        // 显示课程弹窗
+        function showCourseModal(course) {
             selectedCourse = course;
             const isRegistered = isCourseRegistered(course.id);
-            const timeRange = course.time_range || '15:30-17:00';
+            const isEnded = isCourseEnded(course.date);
+            const timeRange = course.time_range || '待定';
+            const location = course.location || '未指定';
+            const note = course.note || '无特殊说明';
             
-            document.getElementById('selectedCourseTitle').innerText = course.course_name;
-            document.getElementById('selectedCourseDetail').innerHTML = `
-                讲师：${course.instructors?.name || '未知'}<br>
-                日期：${course.date}<br>
-                时间：${timeRange}
-            `;
+            modalTitle.innerText = course.course_name;
+            modalDate.innerText = course.date;
+            modalTime.innerText = timeRange;
+            modalInstructor.innerText = course.instructors?.name || '未知';
+            modalCourseName.innerText = course.course_name;
+            modalLocation.innerHTML = `📍 地点：${location}`;
+            modalNote.innerHTML = `📝 备注：${note}`;
             
-            // 显示或隐藏重复报名提示
-            const warningEl = document.getElementById('registeredWarning');
-            const registerBtn = document.getElementById('confirmRegisterBtn');
-            
-            if (isRegistered) {
-                warningEl.classList.remove('hidden');
-                registerBtn.classList.add('hidden');
+            if (isRegistered || isEnded) {
+                modalWarning.classList.remove('hidden');
+                modalWarning.innerText = isEnded ? '此课程已结束' : '您已经报名过这门课程';
+                modalConfirmBtn.classList.add('hidden');
             } else {
-                warningEl.classList.add('hidden');
-                registerBtn.classList.remove('hidden');
+                modalWarning.classList.add('hidden');
+                modalConfirmBtn.classList.remove('hidden');
             }
             
-            document.getElementById('bookingCard').classList.remove('hidden');
+            modal.classList.add('active');
         }
 
         // 确认报名
-        document.getElementById('confirmRegisterBtn').onclick = async function() {
+        modalConfirmBtn.onclick = async function() {
             if (!selectedCourse) return;
             
-            // 再次检查是否已报名（防止快速重复点击）
             if (isCourseRegistered(selectedCourse.id)) {
                 alert('您已经报名过这门课程了');
-                document.getElementById('bookingCard').classList.add('hidden');
+                modal.classList.remove('active');
                 selectedCourse = null;
                 return;
             }
@@ -629,9 +920,8 @@
                 alert('报名失败：' + error.message);
             } else {
                 alert('报名成功！');
-                document.getElementById('bookingCard').classList.add('hidden');
+                modal.classList.remove('active');
                 selectedCourse = null;
-                // 刷新报名列表和日历
                 loadMyRegistrations();
             }
         };
