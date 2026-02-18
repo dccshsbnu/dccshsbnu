@@ -288,6 +288,81 @@
             color: white;
         }
         
+        /* 签到相关样式 */
+        .checkin-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .checkin-badge-yes {
+            background: #10b981;
+            color: white;
+        }
+        
+        .checkin-badge-no {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .btn-checkin {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            min-width: 100px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-checkin:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-checkin:active {
+            transform: translateY(0);
+        }
+        
+        .btn-checkin.checked {
+            background: #f59e0b;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-checkin.checked:hover {
+            background: #d97706;
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+        }
+        
+        .stats-number {
+            font-weight: 700;
+            color: #2b6e9b;
+            font-size: 1.1rem;
+        }
+        
+        .stats-label {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        
+        .student-stats {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .stat-item {
+            text-align: center;
+            min-width: 50px;
+        }
+        
         input, select, textarea {
             padding: 10px 16px;
             border-radius: 30px;
@@ -365,6 +440,15 @@
         .btn-danger:hover {
             background: #7f1515;
             box-shadow: 0 8px 20px rgba(185, 28, 28, 0.3);
+        }
+        
+        .btn-view {
+            background: #8b5cf6;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+        }
+        
+        .btn-view:hover {
+            background: #7c3aed;
         }
         
         /* 新增课程表单 - 移动端优化 */
@@ -510,6 +594,44 @@
                 margin-bottom: 25px;
                 padding-bottom: 15px;
             }
+        }
+        
+        /* 报名学员列表弹窗 */
+        .students-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+        
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #e9f0f5;
+            gap: 16px;
+        }
+        
+        .student-item:last-child {
+            border-bottom: none;
+        }
+        
+        .student-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+        
+        .student-name {
+            font-weight: 600;
+            color: #1e405e;
+            font-size: 1rem;
+        }
+        
+        .student-time {
+            font-size: 0.8rem;
+            color: #64748b;
         }
         
         .modal-form {
@@ -874,6 +996,40 @@
                 padding: 10px;
                 font-size: 0.8rem;
             }
+            
+            .student-item {
+                padding: 12px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .student-name {
+                font-size: 0.9rem;
+            }
+            
+            .student-time {
+                font-size: 0.7rem;
+            }
+            
+            .btn-checkin {
+                padding: 8px 16px;
+                font-size: 0.8rem;
+                min-width: 80px;
+                align-self: flex-end;
+            }
+            
+            .stats-number {
+                font-size: 1rem;
+            }
+            
+            .stats-label {
+                font-size: 0.7rem;
+            }
+            
+            .student-stats {
+                gap: 8px;
+            }
         }
     </style>
 </head>
@@ -908,11 +1064,13 @@
                             <th>地点</th>
                             <th>备注</th>
                             <th>状态</th>
+                            <th>报名人数</th>
+                            <th>签到人数</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tbody id="coursesTable">
-                        <tr><td colspan="8" style="text-align:center; padding:40px;">加载中...</td></tr>
+                        <tr><td colspan="10" style="text-align:center; padding:40px;">加载中...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -981,11 +1139,13 @@
                         <tr>
                             <th>姓名</th>
                             <th>密码</th>
+                            <th>报名次数</th>
+                            <th>签到次数</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tbody id="usersTable">
-                        <tr><td colspan="3" style="text-align:center; padding:40px;">加载中...</td></tr>
+                        <tr><td colspan="5" style="text-align:center; padding:40px;">加载中...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1007,12 +1167,13 @@
                             <th>地点</th>
                             <th>备注</th>
                             <th>状态</th>
+                            <th>签到状态</th>
                             <th>报名时间</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tbody id="registrationsTable">
-                        <tr><td colspan="10" style="text-align:center; padding:40px;">加载中...</td></tr>
+                        <tr><td colspan="11" style="text-align:center; padding:40px;">加载中...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1068,6 +1229,19 @@
         </div>
     </div>
 
+    <!-- 报名学员列表弹窗 -->
+    <div class="modal-overlay" id="studentsModal">
+        <div class="modal-content">
+            <h3 id="studentsModalTitle">报名学员列表</h3>
+            <div class="students-list" id="studentsList">
+                <!-- 动态加载学员列表 -->
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" id="closeStudentsModal">关闭</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://fdwacsuphbpxfariohan.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkd2Fjc3VwaGJweGZhcmlvaGFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMDM1MzcsImV4cCI6MjA4NjY3OTUzN30.q1CzBhIw8xVYL4efkTvGYLkeC04dnBSCPcAWk7LHxxU';
@@ -1083,6 +1257,9 @@
 
         // 弹窗元素
         const editModal = document.getElementById('editModal');
+        const studentsModal = document.getElementById('studentsModal');
+        const studentsList = document.getElementById('studentsList');
+        const studentsModalTitle = document.getElementById('studentsModalTitle');
         const editDate = document.getElementById('editDate');
         const editStartTime = document.getElementById('editStartTime');
         const editEndTime = document.getElementById('editEndTime');
@@ -1092,6 +1269,7 @@
         const editNote = document.getElementById('editNote');
         const saveEditBtn = document.getElementById('saveEditBtn');
         const closeEditBtn = document.getElementById('closeEditBtn');
+        const closeStudentsModal = document.getElementById('closeStudentsModal');
 
         // 关闭弹窗
         closeEditBtn.onclick = function() {
@@ -1099,10 +1277,20 @@
             currentEditCourse = null;
         };
 
+        closeStudentsModal.onclick = function() {
+            studentsModal.classList.remove('active');
+        };
+
         editModal.onclick = function(e) {
             if (e.target === editModal) {
                 editModal.classList.remove('active');
                 currentEditCourse = null;
+            }
+        };
+
+        studentsModal.onclick = function(e) {
+            if (e.target === studentsModal) {
+                studentsModal.classList.remove('active');
             }
         };
 
@@ -1141,22 +1329,29 @@
         async function loadUsers() {
             const { data, error } = await supabaseClient
                 .from('users')
-                .select('*')
+                .select('*, registrations(*)')
                 .eq('role', 'student')
                 .order('id');
             
             if (error) {
-                document.getElementById('usersTable').innerHTML = `<tr><td colspan="3" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
+                document.getElementById('usersTable').innerHTML = `<tr><td colspan="5" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
                 return;
             }
             
             const tbody = document.getElementById('usersTable');
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:40px;">暂无学员</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">暂无学员</td></tr>';
             } else {
                 let html = '';
-                data.forEach(user => {
+                for (const user of data) {
                     const isVisible = visiblePasswords[user.id] || false;
+                    
+                    // 获取报名次数
+                    const registrations = user.registrations || [];
+                    const totalRegistrations = registrations.length;
+                    
+                    // 获取签到次数
+                    const checkedRegistrations = registrations.filter(r => r.attended).length;
                     
                     html += `<tr>
                         <td>${user.name}</td>
@@ -1165,9 +1360,11 @@
                                 ? `<span class="password-visible">${user.password}</span>` 
                                 : `<span class="password-hidden">•••••••</span>`}
                         </td>
+                        <td><span class="stats-number">${totalRegistrations}</span> 次</td>
+                        <td><span class="stats-number">${checkedRegistrations}</span> 次</td>
                         <td><button class="btn-danger btn" onclick="deleteUser('${user.id}')">删除</button></td>
                     </tr>`;
-                });
+                }
                 tbody.innerHTML = html;
             }
         }
@@ -1275,17 +1472,17 @@
         async function loadCourses() {
             const { data, error } = await supabaseClient
                 .from('courses')
-                .select('*, instructors(*)')
+                .select('*, instructors(*), registrations(*)')
                 .order('date', { ascending: false });
             
             if (error) {
-                document.getElementById('coursesTable').innerHTML = `<tr><td colspan="8" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
+                document.getElementById('coursesTable').innerHTML = `<tr><td colspan="10" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
                 return;
             }
             
             const tbody = document.getElementById('coursesTable');
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px;">暂无课程</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:40px;">暂无课程</td></tr>';
             } else {
                 const now = new Date();
                 const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
@@ -1296,11 +1493,16 @@
                 const tomorrowStr = tomorrow.toISOString().split('T')[0];
                 
                 let html = '';
-                data.forEach(c => {
+                for (const c of data) {
                     const timeRange = c.time_range || '待定';
                     const location = c.location || '未指定';
                     const note = c.note || '无';
                     const isEnded = isCourseEnded(c.date);
+                    
+                    // 计算报名人数和签到人数
+                    const registrations = c.registrations || [];
+                    const totalRegistrations = registrations.length;
+                    const checkedRegistrations = registrations.filter(r => r.attended).length;
                     
                     let rowClass = '';
                     let statusBadge = '';
@@ -1326,17 +1528,93 @@
                         <td><span class="location-tag">${location}</span></td>
                         <td><span class="note-tag">${note}</span></td>
                         <td>${statusBadge}</td>
+                        <td><span class="stats-number">${totalRegistrations}</span> 人</td>
+                        <td><span class="stats-number">${checkedRegistrations}</span> 人</td>
                         <td>
                             <div class="action-buttons">
+                                <button class="btn btn-view" onclick="showStudents('${c.id}', '${c.course_name}')">名单</button>
                                 <button class="btn btn-edit" onclick="openEditModal('${c.id}')">修改</button>
                                 <button class="btn btn-danger" onclick="deleteCourse('${c.id}')">删除</button>
                             </div>
                         </td>
                     </tr>`;
-                });
+                }
                 tbody.innerHTML = html;
             }
         }
+
+        // 显示报名学员列表 - 关键修改：只传入 id 和 this
+        window.showStudents = async function(courseId, courseName) {
+            const { data, error } = await supabaseClient
+                .from('registrations')
+                .select('*, users(name)')
+                .eq('course_id', courseId)
+                .order('registered_at', { ascending: true });
+            
+            if (error) {
+                alert('加载学员列表失败：' + error.message);
+                return;
+            }
+            
+            studentsModalTitle.innerText = `${courseName} - 报名学员`;
+            
+            if (!data || data.length === 0) {
+                studentsList.innerHTML = '<div style="text-align:center; padding:40px; color:#64748b;">暂无学员报名</div>';
+            } else {
+                let html = '';
+                data.forEach(reg => {
+                    const checkedClass = reg.attended ? 'checked' : '';
+                    const buttonText = reg.attended ? '取消签到' : '签到';
+                    
+                    // 关键修改：只传入 id 和 this，不再传入 !reg.attended
+                    html += `
+                        <div class="student-item">
+                            <div class="student-info">
+                                <span class="student-name">${reg.users?.name || reg.student_name}</span>
+                                <span class="student-time">报名时间：${new Date(reg.registered_at).toLocaleString()}</span>
+                            </div>
+                            <button class="btn-checkin ${checkedClass}" 
+                                onclick="toggleCheckin('${reg.id}', this)">
+                                ${buttonText}
+                            </button>
+                        </div>
+                    `;
+                });
+                studentsList.innerHTML = html;
+            }
+            
+            studentsModal.classList.add('active');
+        };
+
+        // 切换签到状态 - 从按钮状态判断
+        window.toggleCheckin = async function(registrationId, button) {
+            // 从按钮当前状态判断是要签到还是取消签到
+            const isChecked = button.classList.contains('checked');
+            const shouldCheck = !isChecked; // 如果当前是未签到，则 shouldCheck = true（签到）；如果当前是已签到，则 shouldCheck = false（取消签到）
+            
+            const { error } = await supabaseClient
+                .from('registrations')
+                .update({ attended: shouldCheck })
+                .eq('id', registrationId);
+            
+            if (error) {
+                alert('操作失败：' + error.message);
+            } else {
+                // 直接更新传入的按钮元素
+                if (shouldCheck) {
+                    button.classList.add('checked');
+                    button.innerText = '取消签到';
+                } else {
+                    button.classList.remove('checked');
+                    button.innerText = '签到';
+                }
+                
+                // 刷新课程列表和学员列表（后台更新数据）
+                loadCourses();
+                loadUsers();
+                loadRegistrations();
+            }
+        };
 
         window.openEditModal = async function(courseId) {
             const { data, error } = await supabaseClient
@@ -1471,13 +1749,13 @@
                 .order('registered_at', { ascending: false });
             
             if (error) {
-                document.getElementById('registrationsTable').innerHTML = `<tr><td colspan="10" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
+                document.getElementById('registrationsTable').innerHTML = `<tr><td colspan="11" style="color:red; padding:40px;">加载失败：${error.message}</td></tr>`;
                 return;
             }
             
             const tbody = document.getElementById('registrationsTable');
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:40px;">暂无报名记录</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding:40px;">暂无报名记录</td></tr>';
             } else {
                 const now = new Date();
                 const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
@@ -1503,6 +1781,9 @@
                     
                     let rowClass = '';
                     let statusBadge = '';
+                    let checkinBadge = r.attended 
+                        ? '<span class="checkin-badge checkin-badge-yes">已签到</span>' 
+                        : '<span class="checkin-badge checkin-badge-no">未签到</span>';
                     
                     if (isEnded) {
                         rowClass = 'ended-course';
@@ -1526,6 +1807,7 @@
                         <td><span class="location-tag">${location}</span></td>
                         <td><span class="note-tag">${note}</span></td>
                         <td>${statusBadge}</td>
+                        <td>${checkinBadge}</td>
                         <td>${new Date(r.registered_at).toLocaleString()}</td>
                         <td><button class="btn-danger btn" onclick="deleteRegistration('${r.id}')">删除</button></td>
                     </tr>`;
@@ -1541,7 +1823,7 @@
                 .eq('id', id);
             
             if (error) {
-                document.getElementById('registrationsTable').innerHTML = `<tr><td colspan="10" style="color:red; padding:40px;">删除失败：${error.message}</td></tr>`;
+                document.getElementById('registrationsTable').innerHTML = `<tr><td colspan="11" style="color:red; padding:40px;">删除失败：${error.message}</td></tr>`;
             } else {
                 loadRegistrations();
             }
